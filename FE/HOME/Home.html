@@ -1,0 +1,93 @@
+<link rel="stylesheet" href="../HOME/Home.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="stats-grid">
+  <!-- DOANH THU CHART - MỚI -->
+  <div class="chart-card">
+    <h3
+      style="color: var(--primary-color); margin-bottom: 20px; font-size: 18px"
+    >
+      Doanh thu theo ngày
+    </h3>
+    <div class="chart-container">
+      <canvas id="revenueChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">💰</div>
+    <h3>Doanh thu hôm nay</h3>
+    <div class="number">2.450.000đ</div>
+    <div class="trend up">⬆ 12% so với hôm qua</div>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">📝</div>
+    <h3>Đơn hàng mới</h3>
+    <div class="number">42 đơn</div>
+    <div class="trend up">⬆ 8 đơn so với hôm qua</div>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">👥</div>
+    <h3>Tổng nhân viên</h3>
+    <div class="number">12 người</div>
+    <div class="trend up">✅ Đủ biên chế</div>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">🪑</div>
+    <h3>Bàn trống</h3>
+    <div class="number">8/15</div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width: 53%"></div>
+    </div>
+    <div class="trend" style="color: var(--success-color); font-size: 13px">
+      🟢 53% trống
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">👥</div>
+    <h3>Khách hàng</h3>
+    <div class="number">128 khách</div>
+    <div class="trend down">⬇ 5 khách so với hôm qua</div>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">📦</div>
+    <h3>Nguyên liệu sắp hết</h3>
+    <div class="number">3 món</div>
+    <div class="trend" style="color: var(--warning-color)">⚠️ Cần nhập kho</div>
+  </div>
+</div>
+
+<!-- CONTENT GRID -->
+<div class="content-grid">
+  <!-- ORDERS TABLE - STATUS MỚI -->
+  <div class="panel">
+    <div class="panel-header">
+      <h3>Đơn hàng gần đây</h3>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Chart doanh thu
+  const ctx = document.getElementById("revenueChart").getContext("2d");
+
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: ["T2", "T3", "T4", "T5", "T6", "T7", "CN"],
+      datasets: [
+        {
+          label: "Doanh thu",
+          data: [1200000, 1900000, 1500000, 2200000, 2500000, 2800000, 3000000],
+          borderWidth: 2,
+          tension: 0.4,
+        },
+      ],
+    },
+  });
+</script>

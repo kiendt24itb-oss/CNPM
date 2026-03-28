@@ -1,0 +1,36 @@
+<link rel="stylesheet" href="../ORDER/Order.css" />
+
+<div class="page-content">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        placeholder="Tìm kiếm..."
+        oninput="filterMenu(this.value)"
+      />
+    </div>
+
+    <div class="filter-group">
+      <button class="filter-btn active" onclick="filterCat('all', this)">
+        Tất cả
+      </button>
+      <button class="filter-btn" onclick="filterCat('banh', this)">Bánh</button>
+      <button class="filter-btn" onclick="filterCat('caphe', this)">
+        Cà phê
+      </button>
+      <button class="filter-btn" onclick="filterCat('tra', this)">Trà</button>
+    </div>
+
+    <button class="btn-new-order" onclick="newOrder()">＋ Tạo đơn mới</button>
+  </div>
+
+  <!-- Menu grid -->
+  <div class="menu-grid" id="menuGrid"></div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+</div>
+
+<script src="../ORDER/Order.js"></script>

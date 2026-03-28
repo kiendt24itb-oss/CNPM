@@ -1,0 +1,57 @@
+<link rel="stylesheet" href="../TEST/1.css" />
+<div class="add-product-container">
+  <div class="header">
+    <h2>Thêm sản phẩm mới</h2>
+    <p>Vui lòng điền đầy đủ thông tin bên dưới để tạo món mới vào Menu.</p>
+  </div>
+
+  <form class="product-form">
+    <div class="form-group">
+      <label for="productName">Tên sản phẩm</label>
+      <input
+        type="text"
+        id="productName"
+        placeholder="Ví dụ: Cà Phê Muối"
+        required
+      />
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="category">Danh mục</label>
+        <select id="category">
+          <option value="coffee">Cà phê</option>
+          <option value="tea">Trà trái cây</option>
+          <option value="cake">Bánh ngọt</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="price">Giá bán (VNĐ)</label>
+        <input type="number" id="price" placeholder="45.000" required />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Hình ảnh sản phẩm</label>
+      <div class="image-upload-box">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <span>Nhấn để chọn ảnh hoặc kéo thả vào đây</span>
+        <input type="file" id="productImage" hidden />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Mô tả món ăn/đồ uống</label>
+      <textarea
+        id="description"
+        rows="3"
+        placeholder="Mô tả ngắn gọn về thành phần..."
+      ></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancel">Hủy bỏ</button>
+      <button type="submit" class="btn-submit">Lưu sản phẩm</button>
+    </div>
+  </form>
+</div>

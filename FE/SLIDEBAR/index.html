@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Quản Lý Quán Cà Phê</title>
+
+    <!-- ChartJS (dùng sau) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="..//MENU/Menu.css" />
+  </head>
+
+  <body>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="logo">
+        <span>☕</span>
+        <span>CoffeeManager</span>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">QUẢN LÝ</div>
+
+        <div class="menu-item active" data-page="../HOME/Home.html">
+          <span>📊</span><span>Trang chủ</span>
+        </div>
+
+        <div class="menu-item" data-page="à">
+          <span>🪑</span><span>Bàn</span>
+        </div>
+
+        <div class="menu-item" data-page="../ORDER/Order.html">
+          <span>📋</span><span>Đơn hàng</span>
+          <span class="badge">5</span>
+        </div>
+
+        <div class="menu-item" data-page="../MENU/Menu.html">
+          <span>🍹</span><span>Menu</span>
+        </div>
+
+        <div class="menu-item" data-page="../HOME/Inventory.html">
+          <span>📦</span><span>Kho</span>
+        </div>
+
+        <div class="menu-item" data-page="../HOME/Staff.html">
+          <span>👥</span><span>Nhân viên</span>
+        </div>
+      </div>
+
+      <div class="menu-section">
+        <div class="menu-title">HỆ THỐNG</div>
+
+        <div class="menu-item" data-page="../pages/report.html">
+          <span>📈</span><span>Báo cáo</span>
+        </div>
+
+        <div class="menu-item" data-page="../pages/settings.html">
+          <span>⚙️</span><span>Cài đặt</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-content">
+      <!-- HEADER -->
+      <div class="header">
+        <div>
+          <h2>Chào mừng trở lại, Admin!</h2>
+          <p style="color: var(--text-light); font-size: 14px">
+            Hôm nay là thứ Ba, 15/01/2024
+          </p>
+        </div>
+
+        <!-- USER -->
+        <div class="user-dropdown">
+          <div class="user-info">
+            <div class="avatar">A</div>
+            <div>
+              <div style="font-weight: 600">Quản trị viên</div>
+              <div style="font-size: 12px; color: var(--text-light)">▼</div>
+            </div>
+          </div>
+
+          <div class="dropdown-menu">
+            <div class="dropdown-item">👤 Hồ sơ</div>
+            <div class="dropdown-item">🔐 Đổi mật khẩu</div>
+            <div class="dropdown-item">🚪 Đăng xuất</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTENT LOAD -->
+      <div id="content">
+        <!-- Nội dung sẽ load vào đây -->
+      </div>
+    </div>
+
+    <script src="index.js"></script>
+  </body>
+</html>
