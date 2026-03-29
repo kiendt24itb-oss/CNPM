@@ -8,11 +8,13 @@
   <div class="header-row">
     <div class="stat-item">
       <span class="stat-label">Tổng số bàn:</span>
-      <span class="stat-value" id="totalTables">13</span>
+      <span class="stat-value" id="totalTables">0</span>
     </div>
     <div class="stat-item">
       <span class="stat-label">Bàn đang dùng:</span>
-      <span class="stat-value" style="color: #c62828">03</span>
+      <span class="stat-value" id="occupiedTables" style="color: #c62828"
+        >0</span
+      >
     </div>
     <button class="btn-add-table" onclick="addTable()">
       <span class="icon-add"></span>
@@ -56,60 +58,15 @@
   <div class="table-grid" id="tableGrid"></div>
 </div>
 
-<script src="../TABLE/Table.js"></script>
-">
-<link rel="stylesheet" href="../TABLE/Table.css" />
-
-<div class="menu-container">
-  <div class="header-row">
-    <div class="stat-item">
-      <span class="stat-label">Tổng số bàn:</span>
-      <span class="stat-value" id="totalTables">13</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-label">Bàn đang dùng:</span>
-      <span class="stat-value" style="color: #c62828">03</span>
-    </div>
-    <button class="btn-add-table" onclick="addTable()">
-      <span class="icon-add"></span>
-      Thêm bàn mới
-    </button>
-
-    <div class="header-right">
-      <div class="search-box">
-        <span class="search-icon">
-          <i class="fa fa-search" style="color: #999; font-size: 14px"></i>
-        </span>
-        <input
-          type="text"
-          id="searchInput"
-          placeholder="Tìm số bàn hoặc khu vực..."
-          onkeyup="filterTables()"
-        />
-      </div>
-
-      <div class="dropdown-container">
-        <button class="dropdown-btn" onclick="toggleDropdown()">
-          <span id="selectedStatus">Tất cả trạng thái</span>
-          <span class="dropdown-arrow">▼</span>
-        </button>
-        <div class="dropdown-menu" id="dropdownMenu">
-          <div class="dropdown-item" onclick="selectStatus('Tất cả')">
-            Tất cả
-          </div>
-          <div class="dropdown-item" onclick="selectStatus('Trống')">Trống</div>
-          <div class="dropdown-item" onclick="selectStatus('Đang dùng')">
-            Đang dùng
-          </div>
-          <div class="dropdown-item" onclick="selectStatus('Đang dọn')">
-            Đang dọn
-          </div>
-        </div>
-      </div>
-    </div>
+<!-- Overlay for Add Table (same behavior like Order) -->
+<div
+  id="addTableWrapper"
+  class="add-table-overlay"
+  onclick="if (event.target === this) closeAddTable();"
+>
+  <div class="add-table-box">
+    <div id="addTableContent"></div>
   </div>
-
-  <div class="table-grid" id="tableGrid"></div>
 </div>
 
 <script src="../TABLE/Table.js"></script>

@@ -1,0 +1,49 @@
+<link rel="stylesheet" href="../../TABLE/AddTable/AddTable.css" />
+
+<div class="modal">
+  <div class="modal-header">
+    <h2>Thêm Bàn Mới</h2>
+  </div>
+
+  <div class="modal-body">
+    <div class="form-group">
+      <div class="icon-box">🪑</div>
+      <div class="label-text">Số Bàn:</div>
+      <div style="flex: 1">
+        <div class="hint">Số bàn cố định</div>
+        <input type="text" id="tableId" value="05" readonly />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="icon-box">📍</div>
+      <div class="label-text">Khu vực:</div>
+      <select id="areaSelect">
+        <option value="" disabled selected>👉 Chọn khu vực</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <div class="icon-box">👥</div>
+      <div class="label-text">Sức chứa:</div>
+      <input type="number" id="capacity" value="4" min="1" />
+    </div>
+
+    <div style="margin-top: 10px">
+      <div class="label-text" style="margin-bottom: 5px">Ghi chú:</div>
+      <textarea
+        id="note"
+        placeholder="Ghi chú thêm về vị trí hoặc khách hàng..."
+      ></textarea>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-cancel"><span>✖</span> Hủy</button>
+    <button class="btn btn-submit" id="btnCreate">
+      <span>✔</span> Tạo Bàn
+    </button>
+  </div>
+</div>
+
+<script src="../../TABLE/AddTable/AddTable.js"></script>

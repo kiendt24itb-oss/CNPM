@@ -1,0 +1,150 @@
+:root {
+  --cafe-color: #5d4037;
+  --cafe-light: #f5f1f0;
+  --error-red: #d32f2f;
+  --font-main: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: transparent !important; /* Đồng bộ với AddOrder iframe */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.modal {
+  background: white;
+  width: 420px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  border: 1.5px solid var(--cafe-color);
+}
+
+/* Header căn giữa màu cà phê */
+.modal-header {
+  background-color: var(--cafe-color);
+  padding: 18px;
+  text-align: center;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 19px;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.modal-body {
+  padding: 25px;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.icon-box {
+  width: 40px;
+  height: 40px;
+  background: var(--cafe-light);
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 12px;
+  color: var(--cafe-color);
+  font-size: 18px;
+}
+
+.label-text {
+  width: 120px;
+  font-weight: 600;
+  color: var(--cafe-color);
+  font-size: 14px;
+}
+
+/* Input & Select Styling */
+input,
+select,
+textarea {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1.5px solid var(--cafe-color);
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: var(--font-main);
+  color: var(--cafe-color);
+  outline: none;
+  background-color: #fff;
+}
+
+input[readonly] {
+  background-color: #fdfdfd;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+
+textarea {
+  height: 80px;
+  resize: none;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 5px;
+}
+
+/* Footer & Buttons */
+.modal-footer {
+  display: flex;
+  padding: 0 25px 25px 25px;
+  gap: 12px;
+}
+
+.btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+  font-family: var(--font-main);
+}
+
+/* Nút Hủy - Viền đỏ chữ đỏ */
+.btn-cancel {
+  background: white;
+  color: var(--error-red);
+  border: 1.5px solid var(--error-red);
+}
+
+.btn-cancel:hover {
+  background: #fff5f5;
+}
+
+/* Nút Tạo bàn - Cà phê */
+.btn-submit {
+  background: var(--cafe-color);
+  color: white;
+  border: 1.5px solid var(--cafe-color);
+}
+
+.btn-submit:hover {
+  opacity: 0.9;
+}
+
+.hint {
+  font-size: 11px;
+  color: var(--cafe-color);
+  margin-bottom: 4px;
+  opacity: 0.8;
+}

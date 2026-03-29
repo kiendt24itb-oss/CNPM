@@ -32,14 +32,18 @@ const getProductById = async (req, res) => {
 // Create product (Admin only)
 const createProduct = async (req, res) => {
   try {
-    const { name, price, category, description, image } = req.body;
+    const { name, price, categoryId, description, imageUrl } = req.body;
+
+    if (!name || !price) {
+      return res.status(400).json({ message: "Tên và giá sản phẩm là bắt buộc" });
+    }
 
     const productId = await Product.createProduct(
       name,
       price,
-      category,
+      categoryId,
       description,
-      image,
+      imageUrl,
     );
 
     sendResponse(res, 201, { id: productId }, "Thêm sản phẩm thành công");
@@ -53,14 +57,14 @@ const createProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, category, description, image } = req.body;
+    const { name, price, categoryId, description, imageUrl, status } = req.body;
 
     const product = await Product.getProductById(id);
     if (!product) {
       return res.status(404).json({ message: "Sản phẩm không tồn tại" });
     }
 
-    await Product.updateProduct(id, name, price, category, description, image);
+    await Product.updateProduct(id, name, price, categoryId, description, imageUrl, status);
 
     sendResponse(res, 200, { id }, "Cập nhật sản phẩm thành công");
   } catch (error) {
