@@ -11,14 +11,14 @@ const getAllTables = async () => {
       LEFT JOIN areas a ON t.area_id = a.area_id
       ORDER BY t.table_id
     `);
-    return rows.map(row => ({
+    return rows.map((row) => ({
       id: row.table_id,
       name: row.table_name,
       areaId: row.area_id,
       areaName: row.area_name,
       capacity: row.capacity,
       note: row.note,
-      status: row.status
+      status: row.status,
     }));
   } finally {
     connection.release();
@@ -29,13 +29,16 @@ const getAllTables = async () => {
 const getTableById = async (id) => {
   const connection = await pool.getConnection();
   try {
-    const [rows] = await connection.query(`
+    const [rows] = await connection.query(
+      `
       SELECT t.table_id, t.table_name, t.area_id, t.capacity, t.note, t.status,
              a.area_name
       FROM cafe_tables t
       LEFT JOIN areas a ON t.area_id = a.area_id
       WHERE t.table_id = ?
-    `, [id]);
+    `,
+      [id],
+    );
     if (rows.length === 0) return null;
     const row = rows[0];
     return {
@@ -45,7 +48,7 @@ const getTableById = async (id) => {
       areaName: row.area_name,
       capacity: row.capacity,
       note: row.note,
-      status: row.status
+      status: row.status,
     };
   } finally {
     connection.release();
@@ -58,7 +61,7 @@ const createTable = async (name, areaId, capacity, note) => {
   try {
     const [result] = await connection.query(
       "INSERT INTO cafe_tables (table_name, area_id, capacity, note) VALUES (?, ?, ?, ?)",
-      [name, areaId, capacity, note]
+      [name, areaId, capacity, note],
     );
     return result.insertId;
   } finally {
@@ -72,7 +75,7 @@ const updateTable = async (id, name, areaId, capacity, note, status) => {
   try {
     const [result] = await connection.query(
       "UPDATE cafe_tables SET table_name = ?, area_id = ?, capacity = ?, note = ?, status = ? WHERE table_id = ?",
-      [name, areaId, capacity, note, status, id]
+      [name, areaId, capacity, note, status, id],
     );
     return result.affectedRows > 0;
   } finally {
@@ -86,7 +89,7 @@ const deleteTable = async (id) => {
   try {
     const [result] = await connection.query(
       "DELETE FROM cafe_tables WHERE table_id = ?",
-      [id]
+      [id],
     );
     return result.affectedRows > 0;
   } finally {
@@ -98,10 +101,12 @@ const deleteTable = async (id) => {
 const getAllAreas = async () => {
   const connection = await pool.getConnection();
   try {
-    const [rows] = await connection.query("SELECT * FROM areas ORDER BY area_name");
-    return rows.map(row => ({
+    const [rows] = await connection.query(
+      "SELECT * FROM areas ORDER BY area_name",
+    );
+    return rows.map((row) => ({
       id: row.area_id,
-      name: row.area_name
+      name: row.area_name,
     }));
   } finally {
     connection.release();
@@ -114,5 +119,5 @@ module.exports = {
   createTable,
   updateTable,
   deleteTable,
-  getAllAreas
+  getAllAreas,
 };

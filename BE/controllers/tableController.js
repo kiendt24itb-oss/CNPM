@@ -43,7 +43,7 @@ const createTable = async (req, res) => {
     sendResponse(res, 201, { id: tableId }, "Thêm bàn thành công");
   } catch (error) {
     console.error(error);
-    if (error.code === 'ER_DUP_ENTRY') {
+    if (error.code === "ER_DUP_ENTRY") {
       res.status(400).json({ message: "Tên bàn đã tồn tại" });
     } else {
       res.status(500).json({ message: "Lỗi server" });
@@ -67,7 +67,7 @@ const updateTable = async (req, res) => {
     sendResponse(res, 200, { id }, "Cập nhật bàn thành công");
   } catch (error) {
     console.error(error);
-    if (error.code === 'ER_DUP_ENTRY') {
+    if (error.code === "ER_DUP_ENTRY") {
       res.status(400).json({ message: "Tên bàn đã tồn tại" });
     } else {
       res.status(500).json({ message: "Lỗi server" });
@@ -111,5 +111,5 @@ module.exports = {
   createTable,
   updateTable,
   deleteTable,
-  getAllAreas
+  getAllAreas,
 };

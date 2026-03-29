@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const tableController = require("../controllers/tableController");
-const { authenticateToken, requireAdmin } = require("../middleware/auth");
+const { verifyToken, checkAdmin } = require("../middleware/auth");
 
 // Public routes
 router.get("/areas", tableController.getAllAreas);
 
 // Protected routes
-router.use(authenticateToken);
+router.use(verifyToken);
 
 // Get all tables
 router.get("/", tableController.getAllTables);
@@ -16,7 +16,7 @@ router.get("/", tableController.getAllTables);
 router.get("/:id", tableController.getTableById);
 
 // Admin only routes
-router.use(requireAdmin);
+router.use(checkAdmin);
 
 // Create table
 router.post("/", tableController.createTable);

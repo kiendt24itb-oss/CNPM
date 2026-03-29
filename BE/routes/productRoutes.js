@@ -5,14 +5,17 @@ const { validateProduct } = require("../middleware/validator");
 
 const router = express.Router();
 
+// GET /api/products/categories
+router.get("/categories", productController.getAllCategories);
+
 // GET /api/products
 router.get("/", productController.getAllProducts);
 
 // GET /api/products/:id
 router.get("/:id", productController.getProductById);
 
-// GET /api/products/category/:category
-router.get("/category/:category", productController.getProductsByCategory);
+// GET /api/products/category/:categoryId
+router.get("/category/:categoryId", productController.getProductsByCategory);
 
 // POST /api/products
 router.post(

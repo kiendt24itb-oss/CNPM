@@ -35,7 +35,9 @@ const createProduct = async (req, res) => {
     const { name, price, categoryId, description, imageUrl } = req.body;
 
     if (!name || !price) {
-      return res.status(400).json({ message: "Tên và giá sản phẩm là bắt buộc" });
+      return res
+        .status(400)
+        .json({ message: "Tên và giá sản phẩm là bắt buộc" });
     }
 
     const productId = await Product.createProduct(
@@ -64,7 +66,15 @@ const updateProduct = async (req, res) => {
       return res.status(404).json({ message: "Sản phẩm không tồn tại" });
     }
 
-    await Product.updateProduct(id, name, price, categoryId, description, imageUrl, status);
+    await Product.updateProduct(
+      id,
+      name,
+      price,
+      categoryId,
+      description,
+      imageUrl,
+      status,
+    );
 
     sendResponse(res, 200, { id }, "Cập nhật sản phẩm thành công");
   } catch (error) {
@@ -95,10 +105,21 @@ const deleteProduct = async (req, res) => {
 // Get products by category
 const getProductsByCategory = async (req, res) => {
   try {
-    const { category } = req.params;
-    const products = await Product.getProductsByCategory(category);
+    const { categoryId } = req.params;
+    const products = await Product.getProductsByCategory(categoryId);
 
     sendResponse(res, 200, products, "Lấy sản phẩm theo danh mục thành công");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Lỗi server" });
+  }
+};
+
+// Get all categories
+const getAllCategories = async (req, res) => {
+  try {
+    const categories = await Product.getAllCategories();
+    sendResponse(res, 200, categories, "Lấy danh sách danh mục thành công");
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Lỗi server" });
@@ -112,4 +133,5 @@ module.exports = {
   updateProduct,
   deleteProduct,
   getProductsByCategory,
+  getAllCategories,
 };

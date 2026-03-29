@@ -46,7 +46,7 @@ const getUserOrders = async (req, res) => {
 const createOrder = async (req, res) => {
   try {
     const userId = req.userId;
-    const { items, totalPrice } = req.body;
+    const { tableId, customerName, customerCount, items } = req.body;
 
     if (!items || items.length === 0) {
       return res.status(400).json({ message: "Items không được để trống" });
@@ -54,8 +54,9 @@ const createOrder = async (req, res) => {
 
     const orderId = await Order.createOrder(
       userId,
-      totalPrice,
-      "pending",
+      tableId,
+      customerName,
+      customerCount,
       items,
     );
 
