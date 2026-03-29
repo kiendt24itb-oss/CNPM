@@ -3,248 +3,428 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý bàn Cafe</title>
+    <title>Quản lý Kho Cà Phê Pro</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap");
+
       :root {
-        --cafe-color: #5d4037;
-        --cafe-light: #f5f1f0;
-        --error-red: #d32f2f;
-        --font-main: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --coffee-dark: #3e2723;
+        --coffee-main: #5d4037;
+        --coffee-light: #8d6e63;
+        --coffee-soft: #efebe9;
+        --bg-body: #fdfaf9;
+        --white: #ffffff;
+        --status-low-bg: #fff3e0;
+        --status-low-text: #ef6c00;
+        --status-ok-bg: #e8f5e9;
+        --status-ok-text: #2e7d32;
+        --danger: #d32f2f;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
 
       body {
-        font-family: var(--font-main);
-        background-color: #f0f0f0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
+        font-family: "Quicksand", sans-serif;
+        background-color: var(--bg-body);
+        color: var(--coffee-dark);
+        line-height: 1.6;
       }
 
-      .modal {
-        background: white;
-        width: 420px;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        overflow: hidden;
-        border: 1.5px solid var(--cafe-color);
-      }
-
-      /* Header căn giữa màu cà phê */
-      .modal-header {
-        background-color: var(--cafe-color);
-        padding: 18px;
-        text-align: center;
-      }
-
-      .modal-header h2 {
-        margin: 0;
-        font-size: 19px;
-        color: white;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-      }
-
-      .modal-body {
-        padding: 25px;
-      }
-
-      .form-group {
+      /* --- HEADER --- */
+      .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 90px;
+        background: var(--white);
         display: flex;
         align-items: center;
-        margin-bottom: 20px;
+        justify-content: space-between;
+        padding: 0 50px;
+        border-bottom: 3px solid var(--coffee-soft);
+        z-index: 1000;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
       }
 
-      .icon-box {
-        width: 40px;
-        height: 40px;
-        background: var(--cafe-light);
-        border-radius: 8px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-right: 12px;
-        color: var(--cafe-color);
+      .search-box {
+        position: relative;
+        width: 400px;
+      }
+      .search-box i {
+        position: absolute;
+        left: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--coffee-main);
         font-size: 18px;
       }
-
-      .label-text {
-        width: 120px;
-        font-weight: 600;
-        color: var(--cafe-color);
-        font-size: 14px;
-      }
-
-      /* Input & Select Styling */
-      input,
-      select,
-      textarea {
-        flex: 1;
-        padding: 10px 12px;
-        border: 1.5px solid var(--cafe-color);
-        border-radius: 8px;
-        font-size: 15px;
-        font-family: var(--font-main);
-        color: var(--cafe-color);
-        outline: none;
-        background-color: #fff;
-      }
-
-      input[readonly] {
-        background-color: #fdfdfd;
-        cursor: not-allowed;
-        border-style: dashed;
-      }
-
-      textarea {
-        height: 80px;
-        resize: none;
+      .search-box input {
         width: 100%;
-        box-sizing: border-box;
-        margin-top: 5px;
-      }
-
-      /* Footer & Buttons */
-      .modal-footer {
-        display: flex;
-        padding: 0 25px 25px 25px;
-        gap: 12px;
-      }
-
-      .btn {
-        flex: 1;
-        padding: 12px;
-        border-radius: 8px;
+        padding: 14px 15px 14px 55px;
+        border: 2px solid var(--coffee-soft);
+        border-radius: 30px;
+        outline: none;
         font-size: 15px;
-        font-weight: 600;
+        color: var(--coffee-dark);
+        transition: 0.3s;
+        background: var(--bg-body);
+      }
+      .search-box input:focus {
+        border-color: var(--coffee-main);
+        background: var(--white);
+        box-shadow: 0 0 15px rgba(93, 64, 55, 0.15);
+      }
+
+      .btn-add {
+        background: var(--coffee-main);
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 25px;
+        font-weight: 700;
         cursor: pointer;
         display: flex;
         align-items: center;
+        gap: 10px;
+        transition: 0.3s;
+      }
+      .btn-add:hover {
+        background: var(--coffee-dark);
+        transform: translateY(-2px);
+      }
+
+      /* --- MAIN CONTENT --- */
+      .container {
+        max-width: 1200px;
+        margin: 130px auto 50px;
+        padding: 0 20px;
+      }
+
+      /* --- STATS CARDS --- */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 40px;
+      }
+      .stat-card {
+        background: var(--white);
+        padding: 35px;
+        border-radius: 25px;
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        border: 2px solid var(--coffee-soft);
+        transition: 0.3s;
+        box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.01);
+      }
+      .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--coffee-light);
+      }
+
+      .stat-icon {
+        width: 75px;
+        height: 75px;
+        border-radius: 22px;
+        display: flex;
+        align-items: center;
         justify-content: center;
+        font-size: 30px;
+        background: var(--coffee-soft);
+        color: var(--coffee-main);
+      }
+      .stat-info h3 {
+        font-size: 15px;
+        color: var(--coffee-light);
+        margin-bottom: 5px;
+        font-weight: 700;
+      }
+      .stat-info .value {
+        font-size: 40px;
+        font-weight: 800;
+        color: var(--coffee-dark);
+      }
+
+      /* --- TABLE SECTION --- */
+      .table-card {
+        background: var(--white);
+        border-radius: 30px;
+        padding: 25px;
+        border: 2px solid var(--coffee-soft);
+      }
+      .table-header {
+        padding-bottom: 20px;
+        border-bottom: 2px solid var(--coffee-soft);
+        margin-bottom: 15px;
+      }
+      .table-header h2 {
+        font-size: 22px;
+        color: var(--coffee-main);
+        font-weight: 800;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+      }
+      th {
+        padding: 15px 25px; /* Tăng padding một chút cho thoáng */
+        text-align: left;
+        font-size: 15px; /* Tăng size lên một chút */
+        color: var(--coffee-dark); /* Đổi từ coffee-light sang coffee-dark */
+        font-weight: 800; /* Đậm hẳn lên */
+        text-transform: uppercase; /* Giữ nguyên in hoa */
+        letter-spacing: 0.5px; /* Thêm khoảng cách chữ cho dễ đọc */
+      }
+      td {
+        padding: 18px 25px;
+        background: var(--white);
+        border-top: 1px solid var(--coffee-soft);
+        border-bottom: 1px solid var(--coffee-soft);
+        /* Tăng độ đậm chữ cho toàn bộ hàng danh sách */
+        font-weight: 600;
+        color: var(--coffee-dark);
+      }
+      td:first-child {
+        border-left: 1px solid var(--coffee-soft);
+        border-radius: 18px 0 0 18px;
+      }
+      td:last-child {
+        border-right: 1px solid var(--coffee-soft);
+        border-radius: 0 18px 18px 0;
+      }
+
+      .product-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+      .product-img {
+        width: 55px;
+        height: 55px;
+        border-radius: 15px;
+        object-fit: cover;
+        border: 2px solid var(--coffee-soft);
+      }
+
+      .badge {
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .status-ok {
+        background: var(--status-ok-bg);
+        color: var(--status-ok-text);
+      }
+      .status-low {
+        background: var(--status-low-bg);
+        color: var(--status-low-text);
+      }
+
+      .btn-action {
+        background: var(--white);
+        border: 2.5px solid var(--coffee-main);
+        padding: 10px 18px;
+        border-radius: 15px;
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--coffee-main);
+        display: inline-flex;
+        align-items: center;
         gap: 8px;
-        transition: all 0.2s;
-        font-family: var(--font-main);
+        transition: 0.3s;
       }
-
-      /* Nút Hủy - Viền đỏ chữ đỏ */
-      .btn-cancel {
-        background: white;
-        color: var(--error-red);
-        border: 1.5px solid var(--error-red);
-      }
-
-      .btn-cancel:hover {
-        background: #fff5f5;
-      }
-
-      /* Nút Tạo bàn - Cà phê */
-      .btn-submit {
-        background: var(--cafe-color);
+      .btn-action:hover {
+        background: var(--coffee-main);
         color: white;
-        border: 1.5px solid var(--cafe-color);
       }
 
-      .btn-submit:hover {
-        opacity: 0.9;
-      }
-
-      .hint {
-        font-size: 11px;
-        color: var(--cafe-color);
-        margin-bottom: 4px;
-        opacity: 0.8;
+      /* CSS riêng cho cột nhà cung cấp */
+      .supplier-col {
+        color: var(--coffee-dark); /* Đổi sang màu nâu đồng bộ */
+        font-size: 15px;
+        font-weight: 600;
       }
     </style>
   </head>
   <body>
-    <div class="modal">
-      <div class="modal-header">
-        <h2>Thêm Bàn Mới</h2>
+    <header class="header">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input
+          type="text"
+          id="inventorySearch"
+          placeholder="Tìm tên nguyên liệu..."
+          onkeyup="searchTable()"
+        />
       </div>
+      <button class="btn-add">
+        <i class="fas fa-plus-circle"></i> NHẬP HÀNG MỚI
+      </button>
+    </header>
 
-      <div class="modal-body">
-        <div class="form-group">
-          <div class="icon-box">🪑</div>
-          <div class="label-text">Số Bàn:</div>
-          <div style="flex: 1">
-            <div class="hint">Số bàn cố định</div>
-            <input type="text" id="tableId" value="05" readonly />
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
+          <div class="stat-info">
+            <h3>TỔNG CÒN KHO</h3>
+            <div class="value" id="totalCount">0</div>
           </div>
         </div>
-
-        <div class="form-group">
-          <div class="icon-box">📍</div>
-          <div class="label-text">Khu vực:</div>
-          <select id="areaSelect">
-            <option value="" disabled selected>👉 Chọn khu vực</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <div class="icon-box">👥</div>
-          <div class="label-text">Sức chứa:</div>
-          <input type="number" id="capacity" value="4" min="1" />
-        </div>
-
-        <div style="margin-top: 10px">
-          <div class="label-text" style="margin-bottom: 5px">Ghi chú:</div>
-          <textarea
-            id="note"
-            placeholder="Ghi chú thêm về vị trí hoặc khách hàng..."
-          ></textarea>
+        <div class="stat-card" style="border-left: 8px solid var(--danger)">
+          <div
+            class="stat-icon"
+            style="color: var(--danger); background: #ffeeee"
+          >
+            <i class="fas fa-exclamation-triangle"></i>
+          </div>
+          <div class="stat-info">
+            <h3>CẦN NHẬP GẤP</h3>
+            <div class="value" id="urgentCount" style="color: var(--danger)">
+              0
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="modal-footer">
-        <button class="btn btn-cancel"><span>✖</span> Hủy</button>
-        <button class="btn btn-submit" id="btnCreate">
-          <span>✔</span> Tạo Bàn
-        </button>
+      <div class="table-card">
+        <div class="table-header">
+          <h2>
+            <i class="fas fa-store" style="margin-right: 12px"></i>Danh mục hàng
+            sẵn có
+          </h2>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>NGUYÊN LIỆU</th>
+              <th>ĐƠN VỊ</th>
+              <th>SỐ LƯỢNG</th>
+              <th>TRẠNG THÁI</th>
+              <th>NHÀ CUNG CẤP</th>
+              <th style="text-align: right">THAO TÁC</th>
+            </tr>
+          </thead>
+          <tbody id="inventoryTableBody"></tbody>
+        </table>
       </div>
     </div>
 
     <script>
-      // Dữ liệu demo có chứa Icon cho từng khu vực
-      const db = {
-        nextId: "05",
-        areas: [
-          { name: "Trong nhà", icon: "🏠" },
-          { name: "Ban công", icon: "🌅" },
-          { name: "Phòng VIP", icon: "💎" },
-          { name: "Sân vườn", icon: "🌿" },
-        ],
-      };
+      // DỮ LIỆU MẪU
+      const inventoryData = [
+        {
+          name: "Hạt Cà Phê Arabica",
+          unit: "kg",
+          quantity: 125,
+          supplier: "Vinacafé Supply",
+          img: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=100",
+        },
+        {
+          name: "Sữa tươi Dalat Milk",
+          unit: "lít",
+          quantity: 45,
+          supplier: "Dalat Milk Farm",
+          img: "https://images.unsplash.com/photo-1550583724-125581f77833?w=100",
+        },
+        {
+          name: "Đường Biên Hòa",
+          unit: "kg",
+          quantity: 3,
+          supplier: "Biên Hòa Sugar Ltd.",
+          img: "https://images.unsplash.com/photo-1581441363689-1f3c3c414635?w=100",
+        },
+        {
+          name: "Bột Ca Cao",
+          unit: "kg",
+          quantity: 12,
+          supplier: "Cacao Trading Co.",
+          img: "https://images.unsplash.com/photo-1587049016823-69ef9d68bd44?w=100",
+        },
+        {
+          name: "Trà Đen Phúc Long",
+          unit: "túi",
+          quantity: 0,
+          supplier: "Phúc Long Tea",
+          img: "https://images.unsplash.com/photo-1594631252845-29fc4cc8cde9?w=100",
+        },
+      ];
 
-      // Khởi tạo dữ liệu khi load trang
-      window.onload = () => {
-        const select = document.getElementById("areaSelect");
-        const inputId = document.getElementById("tableId");
+      function renderTable() {
+        const tbody = document.getElementById("inventoryTableBody");
 
-        // Gán số bàn
-        inputId.value = db.nextId;
-
-        // Đổ danh sách khu vực kèm icon
-        db.areas.forEach((item) => {
-          let opt = document.createElement("option");
-          opt.value = item.name;
-          // Kết hợp icon và tên khu vực
-          opt.innerHTML = `${item.icon} ${item.name}`;
-          select.appendChild(opt);
-        });
-      };
-
-      // Xử lý nút Tạo Bàn
-      document.getElementById("btnCreate").onclick = () => {
-        const area = document.getElementById("areaSelect").value;
-        if (!area) {
-          alert("Bạn chưa chọn khu vực kìa!");
-          return;
-        }
-        alert(
-          `Đã lưu Bàn ${document.getElementById("tableId").value} tại khu vực ${area}`,
+        // LỌC: Chỉ lấy hàng có số lượng > 0
+        const availableItems = inventoryData.filter(
+          (item) => item.quantity > 0,
         );
-      };
+
+        // TÍNH TOÁN: Cần nhập gấp (bao gồm cả hàng đã hết sạch = 0)
+        const urgentCount = inventoryData.filter(
+          (item) => item.quantity < 15,
+        ).length;
+
+        tbody.innerHTML = availableItems
+          .map((item) => {
+            const isLow = item.quantity < 15;
+            return `
+            <tr>
+              <td>
+                <div class="product-info">
+                  <img src="${item.img}" class="product-img">
+                  <span style="font-weight: 700;">${item.name}</span>
+                </div>
+              </td>
+              <td style="color: var(--coffee-main); font-weight: 700;">${item.unit}</td>
+              <td><span style="font-weight: 800; font-size: 19px; color: ${isLow ? "var(--status-low-text)" : "var(--coffee-dark)"}">${item.quantity}</span></td>
+              <td>
+                <span class="badge ${isLow ? "status-low" : "status-ok"}">
+                  ${isLow ? "Sắp hết" : "Ổn định"}
+                </span>
+              </td>
+              <td class="supplier-col">${item.supplier}</td>
+              <td style="text-align: right">
+                <button class="btn-action">
+                  <i class="fas fa-eye"></i> Chi tiết
+                </button>
+              </td>
+            </tr>
+          `;
+          })
+          .join("");
+
+        // Cập nhật con số thống kê
+        document.getElementById("totalCount").innerText = availableItems.length;
+        document.getElementById("urgentCount").innerText = urgentCount;
+      }
+
+      function searchTable() {
+        let input = document
+          .getElementById("inventorySearch")
+          .value.toLowerCase();
+        let rows = document
+          .getElementById("inventoryTableBody")
+          .getElementsByTagName("tr");
+        for (let row of rows) {
+          row.style.display = row.innerText.toLowerCase().includes(input)
+            ? ""
+            : "none";
+        }
+      }
+
+      window.onload = renderTable;
     </script>
   </body>
 </html>
