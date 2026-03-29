@@ -1,0 +1,90 @@
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+/>
+<link rel="stylesheet" href="AddOrder.css" />
+
+<div class="modal-box">
+  <div class="header">
+    <h2>Thêm đơn hàng mới</h2>
+    <div>
+      <span style="color: var(--primary); font-weight: 800; font-size: 18px"
+        >Đơn: #00129</span
+      >
+    </div>
+  </div>
+
+  <div class="body-grid">
+    <div class="col-left">
+      <span class="label-text">Chọn bàn (Cuộn để xem thêm)</span>
+      <div class="scroll-area no-scrollbar">
+        <div class="grid-tables" id="tables"></div>
+      </div>
+
+      <div class="input-group">
+        <span class="label-text">Tên khách hàng</span>
+        <div class="field">
+          <i class="fas fa-user-circle"></i
+          ><input type="text" placeholder="Nhập tên..." />
+        </div>
+      </div>
+
+      <div class="input-group">
+        <span class="label-text">Số lượng khách hàng</span>
+        <div class="field">
+          <i class="fas fa-users"></i
+          ><input
+            type="number"
+            id="gCount"
+            value="2"
+            min="1"
+            oninput="renderTables()"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <span class="label-text">Thực đơn</span>
+      <div style="position: relative">
+        <div class="dropdown-trigger" onclick="toggleMenu()">
+          <span><i class="fas fa-search"></i> Chọn món...</span>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="menu-drop no-scrollbar" id="menu">
+          <div onclick="addItem('Cà phê đen', 150000, 'fa-mug-hot')">
+            <i class="fas fa-mug-hot"></i> Cà phê đen - 150k
+          </div>
+          <div onclick="addItem('Cà phê sữa', 23000, 'fa-coffee')">
+            <i class="fas fa-coffee"></i> Cà phê sữa - 23k
+          </div>
+          <div onclick="addItem('Trà chanh', 18000, 'fa-glass-whiskey')">
+            <i class="fas fa-glass-whiskey"></i> Trà chanh - 18k
+          </div>
+          <div onclick="addItem('Bánh ngọt', 60000, 'fa-cookie')">
+            <i class="fas fa-cookie"></i> Bánh ngọt - 60k
+          </div>
+        </div>
+      </div>
+
+      <div class="cart-container no-scrollbar" id="cart"></div>
+      <div class="total-price" id="total">Tổng: 0đ</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button class="btn btn-cancel" onclick="parent.closeAddOrder()">
+      <i class="fas fa-times-circle"></i> Hủy
+    </button>
+    <div style="display: flex; gap: 10px">
+      <button class="btn btn-confirm" onclick="submitOrder(false)">
+        <i class="fas fa-check-circle"></i> Xác nhận
+      </button>
+      <button class="btn btn-pay" onclick="submitOrder(true)">
+        <i class="fas fa-credit-card"></i> Thanh toán
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="AddOrder.js"></script>

@@ -1,0 +1,283 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+}
+
+.menu-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* Header Sticky - Giữ nguyên style Menu */
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 15px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #fff;
+  position: fixed;
+  top: 80px;
+  left: 280px;
+  right: 0;
+  z-index: 999;
+  margin: -20px -20px 20px -20px;
+}
+.menu-container {
+  overflow: visible; /* 👈 tránh phá sticky */
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.stat-label {
+  color: #777;
+}
+.stat-value {
+  font-weight: 600;
+  color: #5d4037;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-left: auto;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px; /* Bo góc tròn hơn một chút cho hiện đại */
+  padding: 8px 14px;
+  min-width: 250px;
+  transition: all 0.3s ease; /* Tạo hiệu ứng mượt mà khi đổi màu viền */
+  cursor: text;
+}
+
+/* Hiệu ứng khi ấn vào ô tìm kiếm */
+.search-box:focus-within {
+  border-color: #5d4037; /* Viền chuyển sang màu nâu */
+  box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.15); /* Đổ bóng nhẹ màu nâu nhạt bao quanh */
+}
+
+.search-box i {
+  color: #999; /* Màu icon mặc định */
+  margin-right: 10px;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+/* Khi focus thì icon cũng đậm màu hơn */
+.search-box:focus-within i {
+  color: #5d4037;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+  background: transparent;
+  color: #333;
+}
+
+/* Placeholder tinh tế hơn */
+.search-box input::placeholder {
+  color: #bbb;
+  font-weight: 400;
+}
+/* Icon kính lúp khi focus */
+.search-box:focus-within i {
+  color: #5d4037; /* Icon chuyển sang màu nâu */
+  transform: scale(1.1); /* Phóng to nhẹ icon cho chuyên nghiệp */
+}
+
+/* Dropdown & Buttons - Đồng bộ màu nâu #5d4037 */
+.dropdown-btn,
+.btn-add-table {
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.dropdown-btn {
+  background: #fff;
+  border: 1px solid #5d4037;
+  color: #5d4037;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-add-table {
+  background: #5d4037;
+  color: #fff;
+  border: none;
+}
+.btn-add-table:hover {
+  background: #4e342e;
+}
+
+/* Table Grid Layout */
+.table-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-top: 30px;
+}
+
+/* Table Card - Fixed Height giống Menu */
+.table-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 240px;
+}
+
+/* Phần content chiếm trên */
+.card-content {
+  flex: 1;
+}
+
+/* Nút luôn nằm dưới */
+.product-actions {
+  margin-top: auto;
+}
+
+.table-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.table-icon {
+  width: 60px;
+  height: 60px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+}
+
+.extra-info {
+  height: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* Ẩn nhưng vẫn giữ chỗ */
+.hidden-info {
+  visibility: hidden;
+}
+
+.table-info {
+  flex: 1;
+}
+.table-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+.table-sub {
+  font-size: 12px;
+  color: #999;
+  margin-top: 2px;
+}
+
+/* Status Styles */
+.status-tag {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.status-tag.trong {
+  color: #2e7d32;
+}
+.status-tag.dang-dung {
+  color: #c62828;
+}
+.status-tag.don-dep {
+  color: #f9a825;
+}
+
+.extra-info {
+  background: #fcfaf9;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+/* Action Buttons - Giữ nguyên style Menu */
+.action-row {
+  display: flex;
+  gap: 8px;
+}
+.btn-bill {
+  width: 100%;
+  background: #5d4037;
+  color: #fff;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+.btn-edit,
+.btn-delete {
+  flex: 1;
+  padding: 5px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #666;
+  cursor: pointer;
+}
+
+.btn-edit:hover {
+  border-color: #5d4037;
+  color: #5d4037;
+}
+.btn-delete:hover {
+  border-color: #c62828;
+  color: #c62828;
+}
+
+.icon-add::before {
+  content: "+ ";
+  font-weight: bold;
+}

@@ -1,0 +1,47 @@
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+/>
+<link rel="stylesheet" href="Formula.css" />
+<div class="recipe-modal" id="recipeModal">
+  <div class="recipe-box">
+    <button
+      class="close-modal-btn"
+      onclick="parent.closeFormula()"
+      title="Đóng"
+    >
+      <i class="fa fa-times"></i>
+    </button>
+
+    <h2>Thiết lập công thức</h2>
+
+    <input
+      type="text"
+      class="recipe-name-input"
+      placeholder="Nhập tên công thức (VD: Bạc xỉu đá)..."
+    />
+
+    <div class="table-grid table-header">
+      <div>Nguyên liệu</div>
+      <div>Định lượng</div>
+      <div>Đơn vị</div>
+      <div>Ghi chú</div>
+      <div style="text-align: center">Hành động</div>
+    </div>
+
+    <div id="list-container"></div>
+
+    <button class="add-btn" onclick="addNewRow()">
+      <i class="fa fa-plus"></i> Thêm nguyên liệu
+    </button>
+
+    <div class="actions">
+      <button class="btn btn-cancel" onclick="parent.closeFormula()">
+        Huỷ bỏ
+      </button>
+      <button class="btn btn-save">Lập công thức</button>
+    </div>
+  </div>
+</div>
+
+<script src="Formula.js"></script>

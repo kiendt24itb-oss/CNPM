@@ -1,63 +1,63 @@
-﻿<link rel="stylesheet" href="../MENU/Menu.css">
+﻿<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+/>
+<link rel="stylesheet" href="../MENU/Menu.css" />
 
 <div class="menu-container">
-      <!-- Header Row - All in One Line - STICKY -->
-      <div class="header-row">
-        <div class="stat-item">
-          <span class="stat-label">Tổng số món:</span>
-          <span class="stat-value" id="totalProducts">13</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Món bán chạy:</span>
-          <span class="stat-value">Bánh</span>
-        </div>
-        <button class="btn-add-product" onclick="addProduct()">
-          <span class="icon-add"></span>
-          Thêm sản phẩm
-        </button>
-
-        <div class="header-right">
-          <div class="search-box">
-            <span class="search-icon">Q</span>
-            <input
-              type="text"
-              id="searchInput"
-              placeholder="Thanh tìm kiếm"
-              onkeyup="filterProducts()"
-            />
-          </div>
-
-          <div class="dropdown-container">
-            <button class="dropdown-btn" onclick="toggleDropdown()">
-              <span id="selectedCategory">Tất cả</span>
-              <span class="dropdown-arrow">▼</span>
-            </button>
-            <div class="dropdown-menu" id="dropdownMenu">
-              <div class="dropdown-item" onclick="selectCategory('Tất cả')">
-                Tất cả
-              </div>
-              <div class="dropdown-item" onclick="selectCategory('Bánh')">
-                Bánh
-              </div>
-              <div class="dropdown-item" onclick="selectCategory('Cà phê')">
-                Cà phê
-              </div>
-              <div class="dropdown-item" onclick="selectCategory('Trà')">
-                Trà
-              </div>
-            </div>
-          </div>
-
-          <button class="btn-recipe">
-            <span class="icon-recipe"></span>
-            Thiết lập công thức
-          </button>
-        </div>
-      </div>
-
-      <!-- Product Grid -->
-      <div class="product-grid" id="productGrid">
-        <!-- Products will be rendered here -->
-      </div>
+  <!-- Header -->
+  <div class="header-row">
+    <div class="stat-item">
+      <span class="stat-label">Tổng số món:</span>
+      <span class="stat-value" id="totalProducts">13</span>
     </div>
-    <script src="../MENU/Menu.js"></script>
+
+    <div class="stat-item">
+      <span class="stat-label">Món bán chạy:</span>
+      <span class="stat-value">Bánh</span>
+    </div>
+
+    <button class="btn-add-product" onclick="addProduct()">
+      Thêm sản phẩm
+    </button>
+
+    <div class="header-right">
+      <div class="search-box">
+        <i class="fa fa-search"></i>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Thanh tìm kiếm"
+          onkeyup="filterProducts()"
+        />
+      </div>
+
+      <div class="dropdown-container">
+        <button class="dropdown-btn" onclick="toggleDropdown()">
+          <span id="selectedCategory">Tất cả</span> ▼
+        </button>
+        <div class="dropdown-menu" id="dropdownMenu"></div>
+      </div>
+
+      <button class="btn-recipe" onclick="openFormula()">
+        Thiết lập công thức
+      </button>
+    </div>
+  </div>
+
+  <!-- Product Grid -->
+  <div class="product-grid" id="productGrid"></div>
+</div>
+
+<!-- ✅ OVERLAY CHUẨN -->
+<div id="formulaWrapper" class="formula-overlay">
+  <div class="formula-box">
+    <button class="close-btn" onclick="closeFormula()">
+      <i class="fa fa-times"></i>
+    </button>
+
+    <div id="formulaContent"></div>
+  </div>
+</div>
+
+<script src="../MENU/Menu.js"></script>

@@ -1,152 +1,158 @@
-const products = [
+const orders = [
   {
-    id: 1,
-    name: "Bánh Cheesecake Chanh Dây",
-    price: "45.000đ",
-    icon: "🍰",
-    cat: "banh",
-    label: "Tên sản phẩm",
+    id: "#00123",
+    customer: "Nguyễn Văn A",
+    table: 5,
+    total: "150.000đ",
+    status: "paid",
+    statusText: "Đã thanh toán",
   },
   {
-    id: 2,
-    name: "Cà Phê Sữa Đá",
-    price: "45.000đ",
-    icon: "☕",
-    cat: "caphe",
-    label: "Tên sản phẩm",
+    id: "#00124",
+    customer: "Nguyễn Văn B",
+    table: 2,
+    total: "85.000đ",
+    status: "paid",
+    statusText: "Đã thanh toán",
   },
   {
-    id: 3,
-    name: "Cà Phê Sữa Đá",
-    price: "45.000đ",
-    icon: "🥤",
-    cat: "caphe",
-    label: "Tên sản phẩm",
+    id: "#00125",
+    customer: "Cà Phê Trà",
+    table: 6,
+    total: "120.000đ",
+    status: "unpaid",
+    statusText: "Chưa thanh toán",
   },
   {
-    id: 4,
-    name: "Bánh Cheesecake Chanh Dây",
-    price: "45.000đ",
-    icon: "🍰",
-    cat: "banh",
-    label: "Tên sản phẩm",
+    id: "#00126",
+    customer: "Trần Thị C",
+    table: 4,
+    total: "210.000đ",
+    status: "paid",
+    statusText: "Đã thanh toán",
   },
   {
-    id: 5,
-    name: "Cà Phê Trà",
-    price: "45.000đ",
-    icon: "🥤",
-    cat: "tra",
-    label: "Tên sản phẩm",
+    id: "#00127",
+    customer: "Lê Văn D",
+    table: 5,
+    total: "45.000đ",
+    status: "processing",
+    statusText: "Đang xử lý",
   },
   {
-    id: 6,
-    name: "Cà Phê Sữa",
-    price: "45.000đ",
-    icon: "🥤",
-    cat: "caphe",
-    label: "Tên sản phẩm",
-  },
-  {
-    id: 7,
-    name: "Trà Đào Cam Sả",
-    price: "40.000đ",
-    icon: "🍑",
-    cat: "tra",
-    label: "Tên sản phẩm",
-  },
-  {
-    id: 8,
-    name: "Cà Phê Đen",
-    price: "35.000đ",
-    icon: "☕",
-    cat: "caphe",
-    label: "Tên sản phẩm",
-  },
-  {
-    id: 9,
-    name: "Bánh Su Kem",
-    price: "30.000đ",
-    icon: "🧁",
-    cat: "banh",
-    label: "Tên sản phẩm",
+    id: "#00128",
+    customer: "Phạm Văn E",
+    table: 1,
+    total: "60.000đ",
+    status: "unpaid",
+    statusText: "Chưa thanh toán",
   },
 ];
 
-let currentCat = "all";
-let searchTerm = "";
+// Cơ chế path linh hoạt khi page Order được nhúng bằng sidebar
+const ORDER_BASE_PATH = (() => {
+  const currentScript = document.currentScript;
+  if (currentScript && currentScript.src) {
+    const scriptUrl = new URL(currentScript.src, window.location.href);
+    return scriptUrl.href.replace(/\/Order\.js$/, "/");
+  }
 
-function renderMenu() {
-  const grid = document.getElementById("menuGrid");
-  const filtered = products.filter((p) => {
-    const catMatch = currentCat === "all" || p.cat === currentCat;
-    const searchMatch = p.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return catMatch && searchMatch;
-  });
+  // Nếu không lấy được currentScript, dùng path của window.location (trường hợp test trực tiếp)
+  const path = window.location.pathname;
+  const lastSlashIndex = path.lastIndexOf("/");
+  if (lastSlashIndex !== -1) {
+    return `${window.location.origin}${path.slice(0, lastSlashIndex + 1)}`;
+  }
+  return `${window.location.origin}/FE/ORDER/`;
+})();
 
-  grid.innerHTML = filtered
-    .map(
-      (p) => `
-    <div class="card" id="card-${p.id}">
-      <div class="card-header">
-        <div class="card-icon">${p.icon}</div>
-        <div class="card-info">
-          <div class="card-label">${p.label}</div>
-          <div class="card-name">${p.name}</div>
-          <div class="card-price">${p.price}</div>
-        </div>
-      </div>
-      <div class="card-actions">
-        <button class="btn-view" onclick="viewProduct(${p.id})">👁 Xem</button>
-        <button class="btn-add" onclick="addToOrder(${p.id}, '${p.name}')">＋ Thêm vào đơn</button>
-      </div>
-    </div>
-  `,
-    )
+function renderOrders() {
+  const container = document.getElementById("orderContainer");
+  document.getElementById("total-count").innerText = orders.length;
+
+  container.innerHTML = orders
+    .map((order) => {
+      let statusColor = "#9e9e9e";
+      if (order.status === "paid") statusColor = "#2e7d32";
+      if (order.status === "unpaid") statusColor = "#d32f2f";
+      if (order.status === "processing") statusColor = "#ed6c02";
+
+      return `
+          <div class="order-card">
+            <div class="card-top">
+              <span class="order-id">Đơn: ${order.id}</span>
+              <span class="status-badge" style="background-color: ${statusColor}">${order.statusText}</span>
+            </div>
+            <div class="card-body">
+              <div class="info-row">
+                <i class="fa-solid fa-user-tie"></i> 
+                <span>Khách: <strong>${order.customer}</strong></span>
+              </div>
+              <div class="info-row">
+                <i class="fa-solid fa-couch"></i> 
+                <span>Bàn số: <strong>${order.table}</strong></span>
+              </div>
+              <div class="total-price-row">
+                <span class="total-price-label">Tổng tiền:</span> ${order.total}
+              </div>
+            </div>
+            
+            <div class="card-actions-group">
+              <button class="btn-view"><i class="fa-solid fa-eye"></i> Chi tiết</button>
+              <div class="action-row">
+                <button class="btn-edit"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn-delete"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>
+          </div>
+        `;
+    })
     .join("");
 }
 
-function filterCat(cat, btn) {
-  currentCat = cat;
-  document
-    .querySelectorAll(".filter-btn")
-    .forEach((b) => b.classList.remove("active"));
-  btn.classList.add("active");
-  renderMenu();
-}
+renderOrders();
 
-function filterMenu(val) {
-  searchTerm = val;
-  renderMenu();
-}
+window.openAddOrder = function () {
+  const wrapper = document.getElementById("addOrderWrapper");
+  const content = document.getElementById("addOrderContent");
 
-function showToast(msg) {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
-  setTimeout(() => t.classList.remove("show"), 2200);
-}
+  if (!wrapper || !content) return;
 
-function addToOrder(id, name) {
-  showToast("✓ Đã thêm: " + name);
-}
+  const addOrderUrl = new URL("AddOrder/AddOrder.html", ORDER_BASE_PATH).href;
 
-function viewProduct(id) {
-  const p = products.find((x) => x.id === id);
-  showToast("👁 Xem: " + p.name + " — " + p.price);
-}
+  content.innerHTML = `
+    <iframe 
+      src="${addOrderUrl}" 
+      id="addOrderIframe"
+      style="width: 100%; height: 85vh; border: none; border-radius: 15px;"
+    ></iframe>
+  `;
 
-function newOrder() {
-  showToast("📋 Đã tạo đơn hàng mới!");
-}
+  wrapper.style.display = "flex";
+  document.body.style.overflow = "hidden";
+};
 
-function initMenuPage() {
-  renderMenu();
-}
+window.closeAddOrder = function () {
+  const wrapper = document.getElementById("addOrderWrapper");
+  if (wrapper) {
+    wrapper.style.display = "none";
+    document.getElementById("addOrderContent").innerHTML = "";
+    document.body.style.overflow = "auto";
+  }
+};
 
-window.initMenuPage = initMenuPage;
-window.filterCat = filterCat;
-window.filterMenu = filterMenu;
-window.addToOrder = addToOrder;
-window.viewProduct = viewProduct;
-window.newOrder = newOrder;
+window.addOrder = function (orderData) {
+  // Tạo ID mới
+  const newId = `#00${String(orders.length + 129).padStart(3, "0")}`;
+  const newOrder = {
+    id: newId,
+    customer: orderData.customer || "Khách vãng lai",
+    table: orderData.table,
+    total: `${orderData.total.toLocaleString()}đ`,
+    status: orderData.isPaid ? "paid" : "unpaid",
+    statusText: orderData.isPaid ? "Đã thanh toán" : "Chưa thanh toán",
+  };
+  orders.push(newOrder);
+  renderOrders();
+  closeAddOrder();
+};

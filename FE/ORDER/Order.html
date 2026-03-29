@@ -1,36 +1,46 @@
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+/>
 <link rel="stylesheet" href="../ORDER/Order.css" />
 
-<div class="page-content">
-  <!-- Topbar -->
-  <div class="topbar">
-    <div class="search-box">
-      <span class="search-icon">🔍</span>
-      <input
-        type="text"
-        placeholder="Tìm kiếm..."
-        oninput="filterMenu(this.value)"
-      />
+<div class="order-container">
+  <div class="order-header">
+    <div class="header-left">
+      <span class="total-summary"
+        >Tổng đơn: <strong id="total-count">0</strong></span
+      >
+      <button class="btn-add" onclick="openAddOrder()">
+        <i class="fa-solid fa-plus"></i> Thêm đơn
+      </button>
     </div>
 
-    <div class="filter-group">
-      <button class="filter-btn active" onclick="filterCat('all', this)">
-        Tất cả
+    <div class="header-right">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Tìm đơn hàng..." />
+      </div>
+      <button class="btn-dropdown">
+        Trạng thái <i class="fa-solid fa-chevron-down"></i>
       </button>
-      <button class="filter-btn" onclick="filterCat('banh', this)">Bánh</button>
-      <button class="filter-btn" onclick="filterCat('caphe', this)">
-        Cà phê
-      </button>
-      <button class="filter-btn" onclick="filterCat('tra', this)">Trà</button>
     </div>
-
-    <button class="btn-new-order" onclick="newOrder()">＋ Tạo đơn mới</button>
   </div>
+</div>
 
-  <!-- Menu grid -->
-  <div class="menu-grid" id="menuGrid"></div>
+<div class="order-grid" id="orderContainer"></div>
 
-  <!-- Toast -->
-  <div class="toast" id="toast"></div>
+<!-- Overlay for Add Order -->
+<div
+  id="addOrderWrapper"
+  class="add-order-overlay"
+  onclick="if (event.target === this) closeAddOrder();"
+>
+  <div class="add-order-box">
+    <button class="close-btn" onclick="closeAddOrder()">
+      <i class="fa fa-times"></i>
+    </button>
+    <div id="addOrderContent"></div>
+  </div>
 </div>
 
 <script src="../ORDER/Order.js"></script>

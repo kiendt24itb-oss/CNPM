@@ -126,6 +126,7 @@ body {
   min-height: calc(100vh - 90px);
   display: block;
   overflow-x: hidden;
+  width: calc(100% - 260px);
 }
 
 .header {

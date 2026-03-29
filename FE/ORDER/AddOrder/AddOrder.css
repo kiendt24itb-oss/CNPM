@@ -1,0 +1,262 @@
+:root {
+  --primary: #5d3a2b;
+  --light: #bda89b;
+  --bg: #f7e6e0;
+  --danger: #d93025;
+  --success: #2e6040;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background-color: transparent !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.modal-box {
+  background: white;
+  width: 720px;
+  border-radius: 15px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.header h2 {
+  margin: 0;
+  color: var(--primary);
+  font-size: 20px;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.body-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* ẨN THANH CUỘN NHƯNG VẪN CUỘN ĐƯỢC */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scroll-area {
+  height: 160px;
+  overflow-y: auto;
+  border: 1.5px solid var(--light);
+  border-radius: 10px;
+  padding: 10px;
+  background: #fafafa;
+}
+
+.grid-tables {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.card-table {
+  background: var(--bg);
+  border: 1.5px solid var(--light);
+  border-radius: 10px;
+  padding: 12px 5px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.card-table.selected {
+  background: var(--primary);
+  border-color: #3e271c;
+  color: white;
+}
+
+.card-table i {
+  font-size: 18px;
+  color: var(--primary);
+  margin-bottom: 5px;
+}
+.card-table.selected i {
+  color: white;
+}
+.card-table span {
+  font-size: 11px;
+  font-weight: bold;
+  display: block;
+}
+
+/* Input Styles */
+.input-group {
+  margin-top: 15px;
+}
+.label-text {
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--primary);
+  margin-bottom: 5px;
+  display: block;
+}
+.field {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--primary);
+  border-radius: 8px;
+  padding: 8px 12px;
+  background: white;
+}
+.field input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-weight: 600;
+  color: var(--primary);
+}
+.field i {
+  color: var(--primary);
+  margin-right: 10px;
+}
+
+/* Dropdown & Cart */
+.dropdown-trigger {
+  border: 1.5px solid var(--primary);
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  color: var(--primary);
+  font-size: 14px;
+}
+
+.menu-drop {
+  display: none;
+  position: absolute;
+  width: 320px;
+  background: white;
+  border: 1.5px solid var(--primary);
+  border-radius: 8px;
+  z-index: 100;
+  margin-top: 5px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.menu-drop div {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  font-size: 13px;
+}
+.menu-drop div:hover {
+  background: var(--bg);
+}
+
+.cart-container {
+  height: 130px;
+  overflow-y: auto;
+  margin-top: 10px;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border-left: 5px solid var(--primary);
+  font-size: 13px;
+}
+
+.qty-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--primary);
+  padding: 2px 8px;
+  border-radius: 5px;
+  background: white;
+}
+.qty-box i {
+  cursor: pointer;
+  color: var(--primary);
+  font-size: 12px;
+}
+
+/* Footer Buttons */
+.footer {
+  padding: 15px 25px;
+  background: #fdfdfd;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  border: none;
+  transition: 0.3s;
+}
+
+.btn-cancel {
+  border: 1.5px solid var(--danger) !important;
+  color: var(--danger);
+  background: transparent;
+}
+.btn-cancel:hover {
+  background: var(--danger);
+  color: white;
+}
+
+.btn-confirm {
+  background: var(--primary);
+  color: white;
+}
+.btn-confirm:hover {
+  transform: scale(1.08);
+  box-shadow: 0 5px 15px rgba(93, 58, 43, 0.3);
+}
+
+.btn-pay {
+  border: 1.5px solid var(--success) !important;
+  color: var(--success);
+  background: transparent;
+}
+.btn-pay:hover {
+  background: var(--success);
+  color: white;
+}
+
+.total-price {
+  text-align: right;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--primary);
+  margin-top: 5px;
+}

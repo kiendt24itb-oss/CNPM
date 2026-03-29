@@ -61,9 +61,29 @@ body {
   align-items: center;
   background: #fff;
   border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 8px 12px;
-  min-width: 200px;
+  border-radius: 8px; /* Bo góc tròn hơn một chút cho hiện đại */
+  padding: 8px 14px;
+  min-width: 250px;
+  transition: all 0.3s ease; /* Tạo hiệu ứng mượt mà khi đổi màu viền */
+  cursor: text;
+}
+
+/* Hiệu ứng khi ấn vào ô tìm kiếm */
+.search-box:focus-within {
+  border-color: #5d4037; /* Viền chuyển sang màu nâu */
+  box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.15); /* Đổ bóng nhẹ màu nâu nhạt bao quanh */
+}
+
+.search-box i {
+  color: #999; /* Màu icon mặc định */
+  margin-right: 10px;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+/* Khi focus thì icon cũng đậm màu hơn */
+.search-box:focus-within i {
+  color: #5d4037;
 }
 
 .search-box input {
@@ -71,17 +91,20 @@ body {
   outline: none;
   width: 100%;
   font-size: 14px;
+  background: transparent;
   color: #333;
 }
 
+/* Placeholder tinh tế hơn */
 .search-box input::placeholder {
-  color: #999;
+  color: #bbb;
+  font-weight: 400;
 }
 
-.search-icon {
-  color: #999;
-  margin-right: 8px;
-  font-size: 14px;
+/* Icon kính lúp khi focus */
+.search-box:focus-within i {
+  color: #5d4037; /* Icon chuyển sang màu nâu */
+  transform: scale(1.1); /* Phóng to nhẹ icon cho chuyên nghiệp */
 }
 
 /* Dropdown - Styled nicely */
@@ -194,6 +217,7 @@ body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
+  margin-top: 30px;
 }
 
 @media (max-width: 1200px) {
@@ -353,4 +377,58 @@ body {
 .icon-recipe::before {
   content: "☰";
   font-size: 14px;
+}
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+}
+
+#formulaFrame {
+  width: 80%;
+  height: 80%;
+  margin: 5% auto;
+  display: block;
+  background: white;
+  border-radius: 10px;
+}
+
+.formula-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.formula-box {
+  background: transparent; /* Đổi từ white sang trong suốt */
+  width: 850px;
+  height: auto;
+  max-height: 90vh;
+  border-radius: 16px;
+  position: relative;
+  /* Xoá box-shadow nếu bạn muốn nó mượt hơn */
+  box-shadow: none;
+}
+
+#formulaContent iframe {
+  width: 100%;
+  height: 650px; /* Tăng nhẹ chiều cao nếu cần */
+  border: none;
+  display: block;
+  background: transparent;
+}
+
+.close-btn {
+  display: none; /* Ẩn dấu X của khung ngoài vì trong iframe đã có rồi */
 }

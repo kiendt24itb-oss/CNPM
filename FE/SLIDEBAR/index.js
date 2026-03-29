@@ -22,8 +22,8 @@ async function loadPage(page) {
       window.initChart();
     }
 
-    if (window.initMenuPage && page.includes("Order")) {
-      window.initMenuPage();
+    if (window.initMenu && page.includes("Order")) {
+      window.initMenu();
     }
 
     console.log("Đã load + chạy JS xong");

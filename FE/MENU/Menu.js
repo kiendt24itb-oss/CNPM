@@ -114,7 +114,7 @@ function formatPrice(price) {
 // ===== RENDER =====
 function renderProducts(productList) {
   const grid = document.getElementById("productGrid");
-  if (!grid) return; // tránh lỗi khi DOM chưa có
+  if (!grid) return;
 
   grid.innerHTML = "";
 
@@ -134,10 +134,16 @@ function renderProducts(productList) {
         </div>
       </div>
       <div class="product-actions">
-        <button class="btn-view" data-id="${product.id}">👁 Xem</button>
+        <button class="btn-view" data-id="${product.id}">
+          <i class="fa-regular fa-eye" data-id="${product.id}"></i> Xem
+        </button>
         <div class="action-row">
-          <button class="btn-edit" data-id="${product.id}">✏️ Sửa</button>
-          <button class="btn-delete" data-id="${product.id}">🗑️ Xoá</button>
+          <button class="btn-edit" data-id="${product.id}">
+            <i class="fa-solid fa-pen-to-square" data-id="${product.id}"></i> Sửa
+          </button>
+          <button class="btn-delete" data-id="${product.id}">
+            <i class="fa-solid fa-trash-can" data-id="${product.id}"></i> Xoá
+          </button>
         </div>
       </div>
     `;
@@ -174,11 +180,56 @@ function filterProducts() {
   renderProducts(filtered);
 }
 
+window.openFormula = function () {
+  const wrapper = document.getElementById("formulaWrapper");
+  const content = document.getElementById("formulaContent");
+
+  if (!wrapper || !content) return;
+
+  // Chèn iframe vào vùng chứa
+  // Chú ý: Căn chỉnh height và width cho phù hợp với modal của bạn
+  content.innerHTML = `
+    <iframe 
+      src="../MENU/FORMULA/Formula.html" 
+      id="formulaIframe"
+      style="width: 100%; height: 85vh; border: none; border-radius: 8px;"
+    ></iframe>
+  `;
+
+  wrapper.style.display = "flex"; 
+  document.body.style.overflow = "hidden"; 
+};
+
+window.closeFormula = function () {
+  const wrapper = document.getElementById("formulaWrapper");
+  if (wrapper) {
+    wrapper.style.display = "none";
+    document.getElementById("formulaContent").innerHTML = ""; // Xoá iframe để giải phóng bộ nhớ
+    document.body.style.overflow = "auto";
+  }
+};
+
 // ===== INIT (QUAN TRỌNG NHẤT) =====
 function initMenu() {
   renderProducts(products);
 }
 
+function addNewRow() {
+  const container = document.getElementById("list-container");
+  const row = document.createElement("div");
+  row.className = "table-grid"; // Để nó chia cột giống tiêu đề
+
+  row.innerHTML = `
+    <input type="text" placeholder="Tên NL">
+    <input type="number" placeholder="0">
+    <input type="text" placeholder="Đơn vị">
+    <input type="text" placeholder="Ghi chú">
+    <button onclick="this.parentElement.remove()" style="color:red; cursor:pointer;">
+        <i class="fa fa-trash"></i>
+    </button>
+  `;
+  container.appendChild(row);
+}
 // expose ra global để index.js gọi
 window.initMenu = initMenu;
 window.filterProducts = filterProducts;

@@ -1,295 +1,354 @@
-:root {
-  --brown-dark: #4a2c17;
-  --brown-mid: #7b4a2b;
-  --brown-light: #c8956a;
-  --cream: #f5f5f5;
-  --cream-card: #f5f5f5;
-  --cream-border: #f5f5f5;
-  --text-dark: #5d4037;
-  --text-mid: #5d4037;
-  --shadow: 0 4px 18px rgba(74, 44, 23, 0.1);
-}
-
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  font-family: "Be Vietnam Pro", sans-serif;
-  background: var(--cream);
-  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  padding: 0px;
 }
 
-.page-content {
-  padding: 28px 20px 60px;
-  min-width: 0;
-  width: 100%;
-  overflow-x: hidden;
-  box-sizing: border-box;
+.order-container {
+  padding-left: 260px;
+  padding-top: 80px;
 }
 
-/* Top bar */
-.topbar {
+/* --- 2. HEADER STICKY --- */
+.order-header {
   display: flex;
   align-items: center;
-  gap: 14px;
-  flex-wrap: wrap;
+  gap: 15px;
+  padding: 12px 20px;
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
 
-  /* --- PHẦN THÊM MỚI ĐỂ CỐ ĐỊNH --- */
-  position: sticky; /* Giữ thanh này lại khi cuộn */
-  top: 0; /* Dính sát mép trên */
-  z-index: 100; /* Đảm bảo nằm đè lên các thẻ card món ăn */
-  background: var(
-    --cream
-  ); /* Phải có màu nền để không bị xuyên thấu code bên dưới */
-  padding: 15px 0; /* Tạo khoảng cách trên dưới cho đẹp */
-  margin-top: -15px; /* Bù lại padding để sát mép trang */
-  border-bottom: 1px solid var(--cream-border); /* Thêm đường kẻ nhẹ để phân tách khi cuộn */
-  /* ------------------------------- */
+  position: fixed;
+  top: 70px; /* nằm dưới header chính */
+  left: 260px; /* 👈 bằng width sidebar */
+  right: 0;
 
-  margin-bottom: 28px;
+  z-index: 999;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.total-summary {
+  font-size: 13px;
+  color: #777;
+}
+
+.total-summary strong {
+  font-weight: 600;
+  color: #5d4037;
+  font-size: 16px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+/* --- 3. SEARCH BOX --- */
 .search-box {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: white;
-  border: 1.5px solid var(--cream-border);
-  border-radius: 10px;
-  padding: 9px 14px;
-  flex: 1;
-  min-width: 180px;
-  box-shadow: var(--shadow);
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px 12px;
+  min-width: 220px;
+  transition: all 0.3s ease;
 }
+
+.search-box:focus-within {
+  border-color: #5d4037;
+  box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.1);
+}
+
+.search-box i {
+  color: #999;
+  margin-right: 8px;
+  font-size: 13px;
+}
+
 .search-box input {
   border: none;
   outline: none;
-  font-family: "Be Vietnam Pro", sans-serif;
-  font-size: 14px;
-  color: var(--text-dark);
-  background: transparent;
   width: 100%;
-}
-.search-box input::placeholder {
-  color: #bca48a;
-}
-.search-icon {
-  color: #bca48a;
-  font-size: 15px;
+  font-size: 13px;
+  background: transparent;
 }
 
-.filter-group {
+/* --- 4. BUTTONS --- */
+.btn-add,
+.btn-dropdown {
   display: flex;
   align-items: center;
-  background: white;
-  border: 1.5px solid var(--cream-border);
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-}
-.filter-btn {
-  padding: 9px 16px;
-  font-family: "Be Vietnam Pro", sans-serif;
-  font-size: 13.5px;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.btn-add {
+  background: #5d4037;
+  color: #fff;
   border: none;
-  background: transparent;
-  color: var(--text-mid);
-  transition: all 0.18s;
-  border-right: 1px solid var(--cream-border);
 }
-.filter-btn:last-child {
-  border-right: none;
-}
-.filter-btn.active,
-.filter-btn:hover {
-  background: var(--brown-dark);
-  color: white;
+.btn-add:hover {
+  background: #4e342e;
 }
 
-.btn-new-order {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  background: var(--brown-dark);
-  color: white;
-  border: none;
-  border-radius: 10px;
-  padding: 9px 18px;
-  font-family: "Be Vietnam Pro", sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: var(--shadow);
-  transition:
-    background 0.18s,
-    transform 0.12s;
-  white-space: nowrap;
+.btn-dropdown {
+  background: #fff;
+  border: 1px solid #5d4037;
+  color: #5d4037;
 }
-.btn-new-order:hover {
-  background: var(--brown-mid);
-  transform: translateY(-1px);
+.btn-dropdown:hover {
+  background: #5d4037;
+  color: #fff;
 }
 
-/* Grid */
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 20px;
-}
-
-/* Card */
-.card {
-  background: var(--cream-card);
-  border: 1.5px solid var(--cream-border);
-  border-radius: 18px;
+/* --- 5. GRID SYSTEM --- */
+.order-container {
   padding: 18px;
-  box-shadow: var(--shadow);
+  margin-top: 110px; /* để không bị đè header cố định */
+  width: 100%;
+  max-width: calc(100vw - 300px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.order-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  width: 100%;
+  min-height: 1px;
+}
+
+@media (min-width: 1600px) {
+  .order-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+@media (max-width: 1200px) {
+  .order-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .order-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 420px) {
+  .order-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* --- 6. ORDER CARD & ICON STYLING --- */
+.order-card {
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 12px;
   display: flex;
+  min-width: 0;
   flex-direction: column;
-  gap: 10px;
-  transition:
-    transform 0.18s,
-    box-shadow 0.18s;
-}
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 30px rgba(74, 44, 23, 0.13);
+  height: 205px;
+  transition: all 0.2s ease;
 }
 
-.card-header {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
+.order-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 
-.card-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
-  background: var(--cream);
-  border: 1.5px solid var(--cream-border);
+.card-top {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: 28px;
-  flex-shrink: 0;
+  margin-bottom: 10px;
 }
 
-.card-info {
+.order-id {
+  font-size: 12px;
+  font-weight: 700;
+  color: #5d4037;
+}
+
+.status-badge {
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.card-body {
   flex: 1;
 }
-.card-label {
-  font-size: 11.5px;
-  color: var(--brown-light);
-  font-weight: 500;
-  margin-bottom: 2px;
-}
-.card-name {
-  font-family: "Playfair Display", serif;
-  font-size: 15.5px;
-  color: var(--text-dark);
-  font-weight: 700;
-  line-height: 1.3;
-  margin-bottom: 3px;
-}
-.card-price {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--brown-mid);
-}
 
-.card-actions {
+.info-row {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 8px;
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 6px;
 }
 
-.btn-view,
-.btn-add {
-  width: 100%;
-  border: none;
-  border-radius: 9px;
-  padding: 9px 0;
-  font-family: "Be Vietnam Pro", sans-serif;
-  font-size: 13.5px;
-  font-weight: 600;
-  cursor: pointer;
+/* ĐÂY LÀ PHẦN CSS CHO ICON NGƯỜI VÀ BÀN MÀ BẠN CẦN */
+.info-row i {
+  background-color: #fdfaf8; /* Nền nâu cực nhạt */
+  color: #8d6e63; /* Màu nâu cafe nhẹ */
+  font-size: 12px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  transition: all 0.16s;
+  border-radius: 6px;
+  border: 1px solid #efebe9;
+}
+
+/* Hiệu ứng khi hover vào card thì icon đổi màu đậm hơn */
+.order-card:hover .info-row i {
+  background-color: #5d4037;
+  color: #fff;
+  border-color: #5d4037;
+  transition: all 0.3s;
+}
+
+.total-price-row {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #eee;
+  color: #5d4037;
+  font-weight: 700;
+  font-size: 13px;
+}
+.total-price-label {
+  font-weight: 400;
+  color: #888;
+  font-size: 12px;
+}
+
+/* --- 7. CARD ACTIONS --- */
+.card-actions-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 8px;
 }
 
 .btn-view {
-  background: var(--brown-dark);
-  color: white;
+  width: 100%;
+  background: #fdfaf8;
+  color: #5d4037;
+  border: 1px solid #5d4037;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn-view i {
+  font-size: 12px;
 }
 .btn-view:hover {
-  background: #3a1f0e;
+  background: #5d4037;
+  color: #fff;
 }
 
-.btn-add {
-  background: white;
-  color: var(--brown-dark);
-  border: 1.5px solid var(--cream-border);
-}
-.btn-add:hover {
-  background: var(--cream);
-  border-color: var(--brown-light);
+.action-row {
+  display: flex;
+  gap: 5px;
 }
 
-/* Toast */
-.toast {
+.btn-edit,
+.btn-delete {
+  flex: 1;
+  padding: 4px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-edit:hover {
+  border-color: #5d4037;
+  color: #5d4037;
+}
+.btn-delete:hover {
+  border-color: #c62828;
+  color: #c62828;
+}
+
+.order-container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto; /* Căn giữa nhưng bị giới hạn 1400px */
+}
+
+/* Add Order Overlay */
+.add-order-overlay {
   position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: var(--brown-dark);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 50px;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 8px 24px rgba(74, 44, 23, 0.25);
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  z-index: 999;
-  white-space: nowrap;
-}
-.toast.show {
-  transform: translateX(-50%) translateY(0);
-}
-
-/* Thêm vào cuối file CSS */
-
-/* Fix khi có sidebar */
-.content-area,
-.main-content,
-.page-content {
-  padding: 0 20px 60px; /* Chỉnh padding-top về 0 để Topbar dính sát lên trên */
-  /* Các dòng khác giữ nguyên */
-  min-width: 0;
+  top: 0;
+  left: 0;
   width: 100%;
-  overflow-x: hidden;
-  box-sizing: border-box;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }
 
-/* Grid tự co theo container */
-.menu-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
-  gap: 20px;
-  width: 100%;
-  min-width: 0;
+.add-order-box {
+  background: transparent;
+  width: 720px;
+  height: auto;
+  max-height: 90vh;
+  border-radius: 15px;
+  position: relative;
+  box-shadow: none;
 }
 
-/* Đảm bảo card không tràn */
-.card {
-  min-width: 0;
-  width: 100%;
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+.close-btn:hover {
+  color: #d32f2f;
 }
