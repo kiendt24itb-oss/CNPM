@@ -196,8 +196,8 @@ window.openFormula = function () {
     ></iframe>
   `;
 
-  wrapper.style.display = "flex"; 
-  document.body.style.overflow = "hidden"; 
+  wrapper.style.display = "flex";
+  document.body.style.overflow = "hidden";
 };
 
 window.closeFormula = function () {
@@ -241,8 +241,36 @@ window.selectCategory = function (category) {
   document.getElementById("dropdownMenu").classList.remove("show");
   filterProducts();
 };
+
+window.openAddProduct = function () {
+  const wrapper = document.getElementById("addProductWrapper");
+  const content = document.getElementById("addProductContent");
+
+  if (!wrapper || !content) return;
+
+  content.innerHTML = `
+    <iframe 
+      src="../MENU/AddProduct/AddProduct.html" 
+      id="addProductIframe"
+      style="width: 100%; height: 85vh; border: none; border-radius: 15px;"
+    ></iframe>
+  `;
+
+  wrapper.style.display = "flex";
+  document.body.style.overflow = "hidden";
+};
+
+window.closeAddProduct = function () {
+  const wrapper = document.getElementById("addProductWrapper");
+  if (wrapper) {
+    wrapper.style.display = "none";
+    document.getElementById("addProductContent").innerHTML = "";
+    document.body.style.overflow = "auto";
+  }
+};
+
 window.addProduct = function () {
-  alert("Mở form thêm sản phẩm mới");
+  openAddProduct();
 };
 
 // ===== EVENT (KHÔNG BỊ NHÂN ĐÔI) =====

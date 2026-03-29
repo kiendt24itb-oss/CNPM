@@ -3,444 +3,326 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Order Coffee - Perfect UI</title>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-    />
+    <title>Giao diện Thêm Sản Phẩm - Coffee Style</title>
     <style>
       :root {
-        --primary: #5d3a2b;
-        --light: #bda89b;
-        --bg: #f7e6e0;
-        --danger: #d93025;
-        --success: #2e6040;
+        --coffee-main: #634832;
+        --coffee-light: #fdfaf8;
+        --coffee-border: #a68b7c;
+        --coffee-placeholder: #b29e8f;
       }
 
       body {
-        font-family: "Segoe UI", Tahoma, sans-serif;
-        background-color: #d1d1d1;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f0f0;
         display: flex;
         justify-content: center;
         align-items: center;
-        min-height: 100vh;
+        height: 100vh;
         margin: 0;
+        color: var(--coffee-main);
       }
 
-      .modal-box {
-        background: white;
-        width: 720px;
+      .modal-container {
+        background-color: white;
+        width: 700px;
         border-radius: 15px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      }
+
+      .modal-header {
+        background-color: var(--coffee-main);
+        color: white;
+        text-align: center;
+        padding: 18px;
+        font-size: 22px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .modal-body {
+        padding: 30px;
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 40px;
+        align-items: start; /* Căn lề trên để các cột không tự co giãn theo nhau */
+      }
+
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 8px;
+      }
+
+      /* CSS KHUNG ẢNH MỚI */
+      .upload-area {
+        border: 2px dashed var(--coffee-border);
+        border-radius: 12px;
+        height: 250px;
         display: flex;
         flex-direction: column;
-      }
-
-      .header {
-        padding: 15px 25px;
-        display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
-        border-bottom: 1px solid #f0f0f0;
-      }
-
-      .header h2 {
-        margin: 0;
-        color: var(--primary);
-        font-size: 20px;
-        text-transform: uppercase;
-        font-weight: 800;
-      }
-
-      .body-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-        padding: 20px;
-      }
-
-      /* ẨN THANH CUỘN NHƯNG VẪN CUỘN ĐƯỢC */
-      .no-scrollbar::-webkit-scrollbar {
-        display: none;
-      }
-      .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-
-      .scroll-area {
-        height: 160px;
-        overflow-y: auto;
-        border: 1.5px solid var(--light);
-        border-radius: 10px;
-        padding: 10px;
-        background: #fafafa;
-      }
-
-      .grid-tables {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-      }
-
-      .card-table {
-        background: var(--bg);
-        border: 1.5px solid var(--light);
-        border-radius: 10px;
-        padding: 12px 5px;
-        text-align: center;
         cursor: pointer;
-        transition: 0.2s;
-      }
-
-      .card-table.selected {
-        background: var(--primary);
-        border-color: #3e271c;
-        color: white;
-      }
-
-      .card-table i {
-        font-size: 18px;
-        color: var(--primary);
-        margin-bottom: 5px;
-      }
-      .card-table.selected i {
-        color: white;
-      }
-      .card-table span {
-        font-size: 11px;
-        font-weight: bold;
-        display: block;
-      }
-
-      /* Input Styles */
-      .input-group {
-        margin-top: 15px;
-      }
-      .label-text {
-        font-size: 12px;
-        font-weight: bold;
-        color: var(--primary);
-        margin-bottom: 5px;
-        display: block;
-      }
-      .field {
-        display: flex;
-        align-items: center;
-        border: 1.5px solid var(--primary);
-        border-radius: 8px;
-        padding: 8px 12px;
-        background: white;
-      }
-      .field input {
-        border: none;
-        outline: none;
-        width: 100%;
-        font-weight: 600;
-        color: var(--primary);
-      }
-      .field i {
-        color: var(--primary);
-        margin-right: 10px;
-      }
-
-      /* Dropdown & Cart */
-      .dropdown-trigger {
-        border: 1.5px solid var(--primary);
-        padding: 10px;
-        border-radius: 8px;
-        cursor: pointer;
-        display: flex;
-        justify-content: space-between;
-        font-weight: bold;
-        color: var(--primary);
-        font-size: 14px;
-      }
-
-      .menu-drop {
-        display: none;
-        position: absolute;
-        width: 320px;
-        background: white;
-        border: 1.5px solid var(--primary);
-        border-radius: 8px;
-        z-index: 100;
-        margin-top: 5px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      }
-
-      .menu-drop div {
-        padding: 10px;
-        cursor: pointer;
-        border-bottom: 1px solid #eee;
-        font-size: 13px;
-      }
-      .menu-drop div:hover {
-        background: var(--bg);
-      }
-
-      .cart-container {
-        height: 130px;
-        overflow-y: auto;
-        margin-top: 10px;
-      }
-
-      .cart-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 12px;
-        background: var(--bg);
-        border-radius: 8px;
-        margin-bottom: 8px;
-        border-left: 5px solid var(--primary);
-        font-size: 13px;
-      }
-
-      .qty-box {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        border: 1px solid var(--primary);
-        padding: 2px 8px;
-        border-radius: 5px;
-        background: white;
-      }
-      .qty-box i {
-        cursor: pointer;
-        color: var(--primary);
-        font-size: 12px;
-      }
-
-      /* Footer Buttons */
-      .footer {
-        padding: 15px 25px;
-        background: #fdfdfd;
-        border-top: 1px solid #eee;
-        display: flex;
-        justify-content: space-between;
-      }
-
-      .btn {
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-weight: bold;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 13px;
-        border: none;
+        background-color: var(--coffee-light);
+        position: relative;
+        overflow: hidden;
         transition: 0.3s;
       }
 
+      .upload-area:hover {
+        border-color: var(--coffee-main);
+        background-color: #f5eee8;
+      }
+
+      #previewImage {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: none;
+        position: absolute;
+      }
+
+      /* ĐỒNG BỘ TẤT CẢ INPUT/SELECT/TEXTAREA */
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1.5px solid #dcd0c6;
+        border-radius: 10px;
+        font-size: 14px;
+        font-family: inherit;
+        color: var(--coffee-main);
+        background-color: white;
+        outline: none;
+        box-sizing: border-box; /* Giữ input nằm gọn trong khung */
+        margin-top: 5px; /* Tạo khoảng cách nhỏ với label */
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--coffee-main);
+      }
+
+      /* Màu cho placeholder (chữ ví dụ) */
+      ::placeholder {
+        color: var(--coffee-placeholder);
+        opacity: 1;
+      }
+
+      /* Khử màu xanh mặc định của dropdown khi chọn (tùy trình duyệt) */
+      select option {
+        background-color: white;
+        color: var(--coffee-main);
+      }
+
+      textarea {
+        height: 100px;
+        resize: none;
+      }
+
+      .modal-footer {
+        padding: 15px 25px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        border-top: 1px solid #f0e6dd;
+      }
+
+      /* NÚT HỦY THEO HÌNH MẪU */
       .btn-cancel {
-        border: 1.5px solid var(--danger) !important;
-        color: var(--danger);
-        background: transparent;
+        color: var(--coffee-main);
+        background: white;
+        border: 1.5px solid #d32f2f; /* Viền đỏ */
+        padding: 10px 20px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.2s;
       }
+
       .btn-cancel:hover {
-        background: var(--danger);
-        color: white;
+        background-color: #fff5f5; /* Nền đỏ cực nhạt */
+        border-color: #b71c1c; /* Viền đỏ đậm hơn */
+        color: #b71c1c;
       }
 
-      .btn-confirm {
-        background: var(--primary);
-        color: white;
-      }
-      .btn-confirm:hover {
-        transform: scale(1.08);
-        box-shadow: 0 5px 15px rgba(93, 58, 43, 0.3);
+      /* Đổi màu chữ cho các option bên trong */
+      select option {
+        background-color: white;
+        color: var(--coffee-main);
+        padding: 10px;
       }
 
-      .btn-pay {
-        border: 1.5px solid var(--success) !important;
-        color: var(--success);
-        background: transparent;
+      /* Icon X thanh mảnh */
+      .close-icon {
+        width: 14px;
+        height: 14px;
+        position: relative;
+        display: inline-block;
       }
-      .btn-pay:hover {
-        background: var(--success);
-        color: white;
+      .close-icon::before,
+      .close-icon::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        background-color: currentColor;
+        top: 6px;
+        left: 0;
+      }
+      .close-icon::before {
+        transform: rotate(45deg);
+      }
+      .close-icon::after {
+        transform: rotate(-45deg);
       }
 
-      .total-price {
-        text-align: right;
-        font-size: 22px;
-        font-weight: 800;
-        color: var(--primary);
-        margin-top: 5px;
+      .btn-save {
+        background-color: var(--coffee-main);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .btn-save:hover {
+        background-color: #4d3827;
       }
     </style>
   </head>
   <body>
-    <div class="modal-box">
-      <div class="header">
-        <h2>Thêm đơn hàng mới</h2>
-        <div>
-          <span style="color: var(--primary); font-weight: 800; font-size: 18px"
-            >Đơn: #00129</span
-          >
+    <div class="modal-container">
+      <div class="modal-header">Thêm sản phẩm mới</div>
+
+      <form id="productForm">
+        <div class="modal-body">
+          <div class="column-left">
+            <label>Hình ảnh sản phẩm</label>
+            <div
+              class="upload-area"
+              onclick="document.getElementById('imgInput').click()"
+            >
+              <svg
+                width="50"
+                height="50"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#a68b7c"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                id="camIcon"
+              >
+                <path
+                  d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+                ></path>
+                <circle cx="12" cy="13" r="4"></circle>
+              </svg>
+              <img src="#" id="previewImage" />
+              <p
+                id="uploadText"
+                style="
+                  font-size: 13px;
+                  color: var(--coffee-border);
+                  margin-top: 10px;
+                "
+              >
+                Nhấn để thêm ảnh
+              </p>
+            </div>
+            <input
+              type="file"
+              id="imgInput"
+              hidden
+              accept="image/*"
+              onchange="previewFile(event)"
+            />
+
+            <div style="margin-top: 22px">
+              <label>Tên sản phẩm</label>
+              <input type="text" placeholder="Ví dụ: Cà phê Muối" />
+            </div>
+          </div>
+
+          <div class="column-right">
+            <div class="form-group">
+              <label>Loại sản phẩm</label>
+              <select id="category">
+                <option value="" disabled selected>
+                  📂 Chọn loại sản phẩm
+                </option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-top: 15px">
+              <label>Giá bán (vnđ)</label>
+              <input type="text" placeholder="Ví dụ: 35.000" />
+            </div>
+            <div class="form-group" style="margin-top: 15px">
+              <label>Mô tả chi tiết</label>
+              <textarea placeholder="Nhập hương vị, thành phần..."></textarea>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="body-grid">
-        <div class="col-left">
-          <span class="label-text">Chọn bàn (Cuộn để xem thêm)</span>
-          <div class="scroll-area no-scrollbar">
-            <div class="grid-tables" id="tables"></div>
-          </div>
-
-          <div class="input-group">
-            <span class="label-text">Tên khách hàng</span>
-            <div class="field">
-              <i class="fas fa-user-circle"></i
-              ><input type="text" placeholder="Nhập tên..." />
-            </div>
-          </div>
-
-          <div class="input-group">
-            <span class="label-text">Số lượng khách hàng</span>
-            <div class="field">
-              <i class="fas fa-users"></i
-              ><input
-                type="number"
-                id="gCount"
-                value="2"
-                min="1"
-                oninput="renderTables()"
-              />
-            </div>
-          </div>
-        </div>
-
-        <div class="col-right">
-          <span class="label-text">Thực đơn</span>
-          <div style="position: relative">
-            <div class="dropdown-trigger" onclick="toggleMenu()">
-              <span><i class="fas fa-search"></i> Chọn món...</span>
-              <i class="fas fa-chevron-down"></i>
-            </div>
-            <div class="menu-drop no-scrollbar" id="menu">
-              <div onclick="addItem('Cà phê đen', 150000, 'fa-mug-hot')">
-                <i class="fas fa-mug-hot"></i> Cà phê đen - 150k
-              </div>
-              <div onclick="addItem('Cà phê sữa', 23000, 'fa-coffee')">
-                <i class="fas fa-coffee"></i> Cà phê sữa - 23k
-              </div>
-              <div onclick="addItem('Trà chanh', 18000, 'fa-glass-whiskey')">
-                <i class="fas fa-glass-whiskey"></i> Trà chanh - 18k
-              </div>
-              <div onclick="addItem('Bánh ngọt', 60000, 'fa-cookie')">
-                <i class="fas fa-cookie"></i> Bánh ngọt - 60k
-              </div>
-            </div>
-          </div>
-
-          <div class="cart-container no-scrollbar" id="cart"></div>
-          <div class="total-price" id="total">Tổng: 0đ</div>
-        </div>
-      </div>
-
-      <div class="footer">
-        <button class="btn btn-cancel">
-          <i class="fas fa-times-circle"></i> Hủy
-        </button>
-        <div style="display: flex; gap: 10px">
-          <button class="btn btn-confirm">
-            <i class="fas fa-check-circle"></i> Xác nhận
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel">
+            <span class="close-icon"></span> Huỷ bỏ
           </button>
-          <button class="btn btn-pay">
-            <i class="fas fa-credit-card"></i> Thanh toán
+          <button type="submit" class="btn-save">
+            <span>✔️</span> Lưu sản phẩm
           </button>
         </div>
-      </div>
+      </form>
     </div>
 
     <script>
-      const tables = [
-        { id: 1, n: "Bàn 1 (4N)", s: 4 },
-        { id: 2, n: "Bàn 2 (4N)", s: 4 },
-        { id: 3, n: "Bàn 3 (8N)", s: 8 },
-        { id: 4, n: "Bàn 4 (4N)", s: 4 },
-        { id: 5, n: "Bàn 5 (8N)", s: 8 },
-        { id: 6, n: "Bàn 6 (4N)", s: 4 },
-        { id: 7, n: "Bàn 7 (8N)", s: 8 },
-        { id: 8, n: "Bàn 8 (4N)", s: 4 },
-        { id: 9, n: "Bàn 9 (8N)", s: 8 },
+      const categories = [
+        { name: "Cà phê truyền thống", icon: "☕" },
+        { name: "Trà & Trái cây", icon: "🍵" },
+        { name: "Bánh & Tráng miệng", icon: "🍰" },
+        { name: "Đồ uống đá xay", icon: "🍧" },
       ];
-      let selectedTable = null;
-      let cart = [];
 
-      function renderTables() {
-        const num = parseInt(document.getElementById("gCount").value) || 0;
-        const grid = document.getElementById("tables");
-        grid.innerHTML = "";
-        tables
-          .filter((t) => (num > 4 ? t.s === 8 : t.s === 4))
-          .forEach((t) => {
-            const d = document.createElement("div");
-            d.className = `card-table ${selectedTable === t.id ? "selected" : ""}`;
-            d.onclick = () => {
-              selectedTable = selectedTable === t.id ? null : t.id;
-              renderTables();
-            };
-            d.innerHTML = `<i class="fas fa-couch"></i><span>${t.n}</span>`;
-            grid.appendChild(d);
-          });
-      }
-
-      function toggleMenu() {
-        const m = document.getElementById("menu");
-        m.style.display = m.style.display === "block" ? "none" : "block";
-      }
-
-      function addItem(name, price, icon) {
-        const ex = cart.find((i) => i.name === name);
-        if (ex) ex.q++;
-        else cart.push({ name, price, icon, q: 1 });
-        toggleMenu();
-        updateCart();
-      }
-
-      function changeQ(name, d) {
-        const i = cart.find((x) => x.name === name);
-        if (i) {
-          i.q += d;
-          if (i.q <= 0) cart = cart.filter((x) => x.name !== name);
-        }
-        updateCart();
-      }
-
-      function updateCart() {
-        const c = document.getElementById("cart");
-        c.innerHTML = "";
-        let total = 0;
-        cart.forEach((i) => {
-          total += i.price * i.q;
-          c.innerHTML += `
-                    <div class="cart-item">
-                        <div style="display:flex; align-items:center; gap:8px">
-                            <i class="fas ${i.icon}" style="color:var(--primary)"></i>
-                            <span style="font-weight:bold">${i.name}</span>
-                        </div>
-                        <div class="qty-box">
-                            <i class="fas fa-minus" onclick="changeQ('${i.name}', -1)"></i>
-                            <span>${i.q}</span>
-                            <i class="fas fa-plus" onclick="changeQ('${i.name}', 1)"></i>
-                        </div>
-                        <strong>${(i.price * i.q).toLocaleString()}đ</strong>
-                    </div>`;
+      window.onload = function () {
+        const select = document.getElementById("category");
+        categories.forEach((item) => {
+          let option = document.createElement("option");
+          option.value = item.name;
+          option.text = `${item.icon} ${item.name}`;
+          select.appendChild(option);
         });
-        document.getElementById("total").innerText =
-          `Tổng: ${total.toLocaleString()}đ`;
-      }
-
-      renderTables();
-      window.onclick = (e) => {
-        if (!e.target.closest(".col-right"))
-          document.getElementById("menu").style.display = "none";
       };
+
+      function previewFile(event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById("previewImage");
+        const camIcon = document.getElementById("camIcon");
+        const text = document.getElementById("uploadText");
+
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            preview.src = e.target.result;
+            preview.style.display = "block";
+            camIcon.style.display = "none";
+            text.style.display = "none";
+          };
+          reader.readAsDataURL(file);
+        }
+      }
     </script>
   </body>
 </html>

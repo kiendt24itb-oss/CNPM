@@ -49,13 +49,20 @@
   <div class="product-grid" id="productGrid"></div>
 </div>
 
-<!-- ✅ OVERLAY CHUẨN -->
+<!-- ✅ OVERLAY FOR ADD PRODUCT -->
+<div
+  id="addProductWrapper"
+  class="add-product-overlay"
+  onclick="if (event.target === this) closeAddProduct();"
+>
+  <div class="add-product-box">
+    <div id="addProductContent"></div>
+  </div>
+</div>
+
+<!-- ✅ OVERLAY FOR FORMULA -->
 <div id="formulaWrapper" class="formula-overlay">
   <div class="formula-box">
-    <button class="close-btn" onclick="closeFormula()">
-      <i class="fa fa-times"></i>
-    </button>
-
     <div id="formulaContent"></div>
   </div>
 </div>
