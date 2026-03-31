@@ -1,39 +1,37 @@
 const jwt = require("jsonwebtoken");
 
-// Verify JWT Token
+// Key này nên để trong file .env (ví dụ: JWT_SECRET=my_super_secret_key)
+const SECRET_KEY = process.env.JWT_SECRET || "COFFEE_MANAGEMENT_SECRET_2024";
+
 const verifyToken = (req, res, next) => {
+  // 1. Lấy token từ header 'Authorization'
+  // Định dạng thường là: "Bearer <token>"
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  // 2. Nếu không có token
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "Truy cập bị từ chối. Vui lòng đăng nhập!",
+    });
+  }
+
   try {
-    const token = req.headers.authorization?.split(" ")[1];
+    // 3. Kiểm tra tính hợp lệ của token
+    const decoded = jwt.verify(token, SECRET_KEY);
 
-    if (!token) {
-      return res.status(401).json({ message: "Token không tồn tại" });
-    }
+    // 4. Lưu thông tin user vào request để các middleware/controller sau sử dụng
+    // decoded thường chứa: { user_id, username, role, email }
+    req.user = decoded;
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.userId = decoded.id;
-    req.userRole = decoded.role;
-    next();
+    next(); // Cho phép đi tiếp
   } catch (error) {
-    res.status(401).json({ message: "Token không hợp lệ" });
+    return res.status(403).json({
+      success: false,
+      message: "Phiên đăng nhập hết hạn hoặc Token không hợp lệ!",
+    });
   }
 };
 
-// Check Admin Role
-const checkAdmin = (req, res, next) => {
-  if (req.userRole !== "admin") {
-    return res.status(403).json({ message: "Bạn không có quyền truy cập" });
-  }
-  next();
-};
-
-// Request logger middleware
-const requestLogger = (req, res, next) => {
-  console.log(`[${new Date().toLocaleString()}] ${req.method} ${req.path}`);
-  next();
-};
-
-module.exports = {
-  verifyToken,
-  checkAdmin,
-  requestLogger,
-};
+module.exports = verifyToken;

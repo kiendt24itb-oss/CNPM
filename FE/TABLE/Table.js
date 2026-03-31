@@ -93,7 +93,7 @@ function renderTables(list) {
     </div>
 
     <div class="product-actions">
-        <button class="btn-bill"><i class="fa-solid fa-file-invoice-dollar"></i> Xem hóa đơn</button>
+        <button class="btn-bill"><i class="fa-solid fa-file-invoice-dollar"></i> Xem</button>
         <div class="action-row">
             <button class="btn-edit" onclick="editTable(${table.id})"><i class="fa-solid fa-pen-to-square"></i> Sửa</button>
             <button class="btn-delete" onclick="deleteTable(${table.id})"><i class="fa-solid fa-trash-can"></i> Xoá</button>

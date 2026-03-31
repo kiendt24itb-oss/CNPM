@@ -1,120 +1,67 @@
 const User = require("../models/User");
-const { sendResponse } = require("../utils/helpers");
+const bcrypt = require("bcrypt"); // Nên dùng bcrypt để mã hóa mật khẩu
 
-// Get all users (Admin only)
-const getAllUsers = async (req, res) => {
-  try {
-    const users = await User.getAllUsers();
-    sendResponse(res, 200, users, "Lấy danh sách người dùng thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
+const UserController = {
+  // 1. Tạo tài khoản người dùng
+  register: async (req, res) => {
+    try {
+      const { username, email, password, role } = req.body;
 
-// Get user profile
-const getUserProfile = async (req, res) => {
-  try {
-    const userId = req.userId;
-    const user = await User.getUserById(userId);
+      if (!username || !email || !password) {
+        return res.status(400).json({
+          success: false,
+          message: "Vui lòng nhập đầy đủ username, email và mật khẩu",
+        });
+      }
 
-    if (!user) {
-      return res.status(404).json({ message: "Người dùng không tồn tại" });
+      // Mã hóa mật khẩu trước khi lưu
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      const userId = await User.create({
+        username,
+        email,
+        password: hashedPassword,
+        role,
+      });
+
+      res.status(201).json({
+        success: true,
+        message: "Tạo tài khoản thành công",
+        userId,
+      });
+    } catch (error) {
+      if (error.code === "ER_NO_REFERENCED_ROW_2") {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Email này chưa có trong hồ sơ nhân viên (Staff). Hãy tạo Staff trước!",
+        });
+      }
+      res.status(500).json({
+        success: false,
+        message: "Lỗi khi tạo tài khoản",
+        error: error.message,
+      });
     }
+  },
 
-    sendResponse(res, 200, user, "Lấy thông tin người dùng thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
-
-// Get user by ID (Admin only)
-const getUserById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = await User.getUserById(id);
-
-    if (!user) {
-      return res.status(404).json({ message: "Người dùng không tồn tại" });
+  // 2. Lấy danh sách tất cả tài khoản
+  getUsers: async (req, res) => {
+    try {
+      const users = await User.getAll();
+      res.status(200).json({
+        success: true,
+        data: users,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Lỗi server",
+        error: error.message,
+      });
     }
-
-    sendResponse(res, 200, user, "Lấy thông tin người dùng thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
+  },
 };
 
-// Update user profile
-const updateUserProfile = async (req, res) => {
-  try {
-    const userId = req.userId;
-    const { fullName } = req.body;
-
-    const user = await User.getUserById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "Người dùng không tồn tại" });
-    }
-
-    await User.updateUser(userId, fullName, user.role);
-
-    sendResponse(
-      res,
-      200,
-      { userId },
-      "Cập nhật thông tin người dùng thành công",
-    );
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
-
-// Update user (Admin only)
-const updateUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { fullName, role } = req.body;
-
-    const user = await User.getUserById(id);
-    if (!user) {
-      return res.status(404).json({ message: "Người dùng không tồn tại" });
-    }
-
-    await User.updateUser(id, fullName, role);
-
-    sendResponse(res, 200, { id }, "Cập nhật người dùng thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
-
-// Delete user (Admin only)
-const deleteUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const user = await User.getUserById(id);
-    if (!user) {
-      return res.status(404).json({ message: "Người dùng không tồn tại" });
-    }
-
-    await User.deleteUser(id);
-
-    sendResponse(res, 200, { id }, "Xóa người dùng thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
-
-module.exports = {
-  getAllUsers,
-  getUserProfile,
-  getUserById,
-  updateUserProfile,
-  updateUser,
-  deleteUser,
-};
+module.exports = UserController;

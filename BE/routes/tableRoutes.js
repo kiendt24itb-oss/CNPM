@@ -1,30 +1,47 @@
 const express = require("express");
 const router = express.Router();
-const tableController = require("../controllers/tableController");
-const { verifyToken, checkAdmin } = require("../middleware/auth");
+const TableController = require("../controllers/TableController");
 
-// Public routes
-router.get("/areas", tableController.getAllAreas);
+// Import middleware của bạn
+const verifyToken = require("../middleware/auth");
+const authorizeRole = require("../middleware/role");
 
-// Protected routes
+/**
+ * TẤT CẢ CÁC ROUTE DƯỚI ĐÂY ĐỀU YÊU CẦU ĐĂNG NHẬP (verifyToken)
+ */
 router.use(verifyToken);
 
-// Get all tables
-router.get("/", tableController.getAllTables);
+// 1. Lấy danh sách tất cả các bàn (ADMIN và STAFF đều làm được)
+router.get("/", TableController.getAllTables);
 
-// Get table by ID
-router.get("/:id", tableController.getTableById);
+// 2. Tìm kiếm bàn theo khu vực (ADMIN và STAFF đều làm được)
+router.get("/area/:area", TableController.getTablesByArea);
 
-// Admin only routes
-router.use(checkAdmin);
+// 3. Cập nhật trạng thái bàn (Ví dụ: Chuyển từ Trống -> Đang dùng khi khách vào)
+// Thường thì STAFF cũng cần quyền này để phục vụ khách
+router.patch("/:id/status", TableController.updateTableStatus);
 
-// Create table
-router.post("/", tableController.createTable);
+/**
+ * CÁC ROUTE CHỈ DÀNH CHO ADMIN (THÊM, SỬA, XÓA)
+ * Nhân viên (STAFF) sẽ bị chặn ở đây
+ */
 
-// Update table
-router.put("/:id", tableController.updateTable);
+// Route Thêm bàn mới (Dùng chung giao diện như bạn mô tả)
+router.post("/", authorizeRole("ADMIN"), (req, res) => {
+  // Logic thêm bàn mới (Bạn cần bổ sung hàm createTable vào Controller)
+  res.json({ message: "Admin đang tạo bàn mới" });
+});
 
-// Delete table
-router.delete("/:id", tableController.deleteTable);
+// Route Sửa thông tin bàn (Số bàn, Khu vực, Sức chứa)
+router.put("/:id", authorizeRole("ADMIN"), (req, res) => {
+  // Logic cập nhật thông tin (Bạn cần bổ sung hàm updateTable vào Controller)
+  res.json({ message: `Admin đang sửa bàn ID: ${req.params.id}` });
+});
+
+// Route Xóa bàn
+router.delete("/:id", authorizeRole("ADMIN"), (req, res) => {
+  // Logic xóa bàn (Bạn cần bổ sung hàm deleteTable vào Controller)
+  res.json({ message: `Admin đang xóa bàn ID: ${req.params.id}` });
+});
 
 module.exports = router;

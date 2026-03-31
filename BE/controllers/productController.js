@@ -1,137 +1,78 @@
 const Product = require("../models/Product");
-const { sendResponse } = require("../utils/helpers");
 
-// Get all products
-const getAllProducts = async (req, res) => {
-  try {
-    const products = await Product.getAllProducts();
-    sendResponse(res, 200, products, "Lấy danh sách sản phẩm thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
-
-// Get product by ID
-const getProductById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const product = await Product.getProductById(id);
-
-    if (!product) {
-      return res.status(404).json({ message: "Sản phẩm không tồn tại" });
+const ProductController = {
+  // 1. Lấy danh sách tất cả món ăn (kèm tên danh mục)
+  getAllProducts: async (req, res) => {
+    try {
+      const products = await Product.getAll();
+      res.status(200).json({
+        success: true,
+        data: products,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Lỗi khi lấy danh sách sản phẩm",
+        error: error.message,
+      });
     }
+  },
 
-    sendResponse(res, 200, product, "Lấy sản phẩm thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
+  // 2. Lấy chi tiết một món ăn bằng ID
+  getProductById: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const product = await Product.getById(id);
 
-// Create product (Admin only)
-const createProduct = async (req, res) => {
-  try {
-    const { name, price, categoryId, description, imageUrl } = req.body;
+      if (!product) {
+        return res.status(404).json({
+          success: false,
+          message: "Không tìm thấy món ăn này",
+        });
+      }
 
-    if (!name || !price) {
-      return res
-        .status(400)
-        .json({ message: "Tên và giá sản phẩm là bắt buộc" });
+      res.status(200).json({
+        success: true,
+        data: product,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Lỗi khi lấy thông tin sản phẩm",
+        error: error.message,
+      });
     }
+  },
 
-    const productId = await Product.createProduct(
-      name,
-      price,
-      categoryId,
-      description,
-      imageUrl,
-    );
+  // 3. Thêm món mới vào Menu
+  // Body gửi lên: { name, price, description, image, category_id, recipe_id }
+  createProduct: async (req, res) => {
+    try {
+      const { name, price, category_id } = req.body;
 
-    sendResponse(res, 201, { id: productId }, "Thêm sản phẩm thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
+      // Kiểm tra các trường bắt buộc
+      if (!name || !price || !category_id) {
+        return res.status(400).json({
+          success: false,
+          message: "Vui lòng nhập đầy đủ tên, giá và danh mục",
+        });
+      }
 
-// Update product (Admin only)
-const updateProduct = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { name, price, categoryId, description, imageUrl, status } = req.body;
+      const newProductId = await Product.create(req.body);
 
-    const product = await Product.getProductById(id);
-    if (!product) {
-      return res.status(404).json({ message: "Sản phẩm không tồn tại" });
+      res.status(201).json({
+        success: true,
+        message: "Thêm món mới thành công",
+        productId: newProductId,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Lỗi khi tạo món ăn mới",
+        error: error.message,
+      });
     }
-
-    await Product.updateProduct(
-      id,
-      name,
-      price,
-      categoryId,
-      description,
-      imageUrl,
-      status,
-    );
-
-    sendResponse(res, 200, { id }, "Cập nhật sản phẩm thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
+  },
 };
 
-// Delete product (Admin only)
-const deleteProduct = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const product = await Product.getProductById(id);
-    if (!product) {
-      return res.status(404).json({ message: "Sản phẩm không tồn tại" });
-    }
-
-    await Product.deleteProduct(id);
-
-    sendResponse(res, 200, { id }, "Xóa sản phẩm thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
-
-// Get products by category
-const getProductsByCategory = async (req, res) => {
-  try {
-    const { categoryId } = req.params;
-    const products = await Product.getProductsByCategory(categoryId);
-
-    sendResponse(res, 200, products, "Lấy sản phẩm theo danh mục thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
-
-// Get all categories
-const getAllCategories = async (req, res) => {
-  try {
-    const categories = await Product.getAllCategories();
-    sendResponse(res, 200, categories, "Lấy danh sách danh mục thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
-
-module.exports = {
-  getAllProducts,
-  getProductById,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  getProductsByCategory,
-  getAllCategories,
-};
+module.exports = ProductController;

@@ -1,120 +1,120 @@
 const Order = require("../models/Order");
-const { sendResponse } = require("../utils/helpers");
+const OrderItem = require("../models/OrderItem");
 
-// Get all orders (Admin only)
-const getAllOrders = async (req, res) => {
-  try {
-    const orders = await Order.getAllOrders();
-    sendResponse(res, 200, orders, "Lấy danh sách đơn hàng thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
+const OrderController = {
+  // ==========================================
+  // NHÓM 1: QUẢN LÝ HÓA ĐƠN CHÍNH (ORDERS)
+  // ==========================================
 
-// Get order by ID
-const getOrderById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const order = await Order.getOrderById(id);
-
-    if (!order) {
-      return res.status(404).json({ message: "Đơn hàng không tồn tại" });
+  // 1. Lấy danh sách tất cả hóa đơn (Dành cho Admin xem báo cáo)
+  getAll: async (req, res) => {
+    try {
+      const orders = await Order.getAllOrders();
+      res.status(200).json({ success: true, data: orders });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ success: false, message: "Lỗi server", error: error.message });
     }
+  },
 
-    sendResponse(res, 200, order, "Lấy đơn hàng thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
-
-// Get user orders
-const getUserOrders = async (req, res) => {
-  try {
-    const userId = req.userId;
-    const orders = await Order.getUserOrders(userId);
-
-    sendResponse(res, 200, orders, "Lấy đơn hàng của bạn thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
-
-// Create order
-const createOrder = async (req, res) => {
-  try {
-    const userId = req.userId;
-    const { tableId, customerName, customerCount, items } = req.body;
-
-    if (!items || items.length === 0) {
-      return res.status(400).json({ message: "Items không được để trống" });
+  // 2. Chi tiết một hóa đơn (Kèm mảng items bên trong)
+  getById: async (req, res) => {
+    try {
+      const order = await Order.getOrderById(req.params.id);
+      if (!order)
+        return res
+          .status(404)
+          .json({ success: false, message: "Không tìm thấy" });
+      res.status(200).json({ success: true, data: order });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ success: false, message: "Lỗi server", error: error.message });
     }
+  },
 
-    const orderId = await Order.createOrder(
-      userId,
-      tableId,
-      customerName,
-      customerCount,
-      items,
-    );
-
-    sendResponse(res, 201, { id: orderId }, "Tạo đơn hàng thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
-
-// Update order status (Admin only)
-const updateOrderStatus = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { status } = req.body;
-
-    const order = await Order.getOrderById(id);
-    if (!order) {
-      return res.status(404).json({ message: "Đơn hàng không tồn tại" });
+  // 3. Tạo hóa đơn mới (Đặt món lần đầu)
+  create: async (req, res) => {
+    try {
+      const { userId, tableId, customerName, customerCount, items } = req.body;
+      if (!items || items.length === 0) {
+        return res
+          .status(400)
+          .json({
+            success: false,
+            message: "Đơn hàng phải có ít nhất một món",
+          });
+      }
+      // Model Order.createOrder nên xử lý Transaction: Lưu Order -> Lưu Items -> Đổi trạng thái bàn
+      const orderId = await Order.createOrder(
+        userId,
+        tableId,
+        customerName,
+        customerCount,
+        items,
+      );
+      res
+        .status(201)
+        .json({ success: true, message: "Tạo đơn hàng thành công", orderId });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ success: false, message: "Lỗi tạo đơn", error: error.message });
     }
+  },
 
-    await Order.updateOrderStatus(id, status);
-
-    sendResponse(res, 200, { id }, "Cập nhật trạng thái đơn hàng thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
-};
-
-// Cancel order
-const cancelOrder = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const order = await Order.getOrderById(id);
-    if (!order) {
-      return res.status(404).json({ message: "Đơn hàng không tồn tại" });
+  // 4. Thanh toán hoặc Cập nhật trạng thái
+  updateStatus: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body; // status: 'PAID', 'CANCELLED'
+      const updated = await Order.updateOrderStatus(id, status);
+      if (!updated)
+        return res
+          .status(404)
+          .json({ success: false, message: "Cập nhật thất bại" });
+      res.status(200).json({ success: true, message: `Trạng thái: ${status}` });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ success: false, message: "Lỗi server", error: error.message });
     }
+  },
 
-    if (order.status !== "pending") {
-      return res.status(400).json({ message: "Không thể hủy đơn hàng này" });
+  // ==========================================
+  // NHÓM 2: CHI TIẾT MÓN TRONG ĐƠN (ORDER ITEMS)
+  // ==========================================
+
+  // 5. Thêm món vào đơn hàng đã tồn tại (Khách gọi thêm món)
+  addItems: async (req, res) => {
+    try {
+      const { id } = req.params; // order_id
+      const { items } = req.body;
+      if (!items || items.length === 0)
+        return res.status(400).json({ message: "Danh sách món trống" });
+
+      const rowsAffected = await OrderItem.addItems(id, items);
+      res
+        .status(201)
+        .json({ success: true, message: `Đã thêm ${rowsAffected} món mới` });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
     }
+  },
 
-    await Order.cancelOrder(id);
-
-    sendResponse(res, 200, { id }, "Hủy đơn hàng thành công");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Lỗi server" });
-  }
+  // 6. Xóa/Hủy đơn hàng nhanh (Giải phóng bàn)
+  cancel: async (req, res) => {
+    try {
+      const cancelled = await Order.cancelOrder(req.params.id);
+      if (!cancelled) return res.status(404).json({ message: "Không thể hủy" });
+      res
+        .status(200)
+        .json({ success: true, message: "Đã hủy đơn và giải phóng bàn" });
+    } catch (error) {
+      res.status(500).json({ success: false, error: error.message });
+    }
+  },
 };
 
-module.exports = {
-  getAllOrders,
-  getOrderById,
-  getUserOrders,
-  createOrder,
-  updateOrderStatus,
-  cancelOrder,
-};
+module.exports = OrderController;

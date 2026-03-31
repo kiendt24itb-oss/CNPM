@@ -1,31 +1,36 @@
 const express = require("express");
-const orderController = require("../controllers/orderController");
-const { verifyToken, checkAdmin } = require("../middleware/auth");
-const { validateOrder } = require("../middleware/validator");
-
 const router = express.Router();
+const OrderController = require("../controllers/OrderController");
+const verifyToken = require("../middleware/auth");
+const authorizeRole = require("../middleware/role");
 
-// GET /api/orders - Admin only
-router.get("/", verifyToken, checkAdmin, orderController.getAllOrders);
+// Tất cả thao tác đơn hàng đều cần đăng nhập
+router.use(verifyToken);
 
-// GET /api/orders/user/my-orders - Get user's orders
-router.get("/user/my-orders", verifyToken, orderController.getUserOrders);
+/**
+ * NHÓM API HIỂN THỊ & LỌC (Dành cho cả STAFF và ADMIN)
+ */
 
-// GET /api/orders/:id
-router.get("/:id", verifyToken, orderController.getOrderById);
+// 1. Lấy danh sách đơn hàng (Giao diện chính)
+// Hỗ trợ query: ?status=ĐÃ THANH TOÁN hoặc ?search=Nguyễn Văn A
+router.get("/", OrderController.getAll);
 
-// POST /api/orders
-router.post("/", verifyToken, validateOrder, orderController.createOrder);
+// 2. Xem chi tiết một đơn hàng (Nút "Chi tiết" ở giữa thẻ)
+router.get("/:id", OrderController.getById);
 
-// PUT /api/orders/:id/status - Update order status (Admin only)
-router.put(
-  "/:id/status",
-  verifyToken,
-  checkAdmin,
-  orderController.updateOrderStatus,
-);
+/**
+ * NHÓM API THAO TÁC (Phân quyền ADMIN cho việc Sửa/Xóa)
+ */
 
-// PUT /api/orders/:id/cancel - Cancel order
-router.put("/:id/cancel", verifyToken, orderController.cancelOrder);
+// 3. Thêm đơn hàng mới (Nút "Thêm đơn" màu nâu góc trên trái)
+router.post("/", OrderController.create);
+
+// 4. Sửa đơn hàng (Biểu tượng Bút chì)
+// Dùng khi cần đổi tên khách, số bàn hoặc thêm/bớt món
+router.put("/:id", authorizeRole("ADMIN"), OrderController.updateStatus); // Có thể dùng chung hàm cập nhật
+
+// 5. Xóa đơn hàng (Biểu tượng Thùng rác)
+// Lưu ý: Chỉ nên cho xóa khi đơn ở trạng thái 'ĐANG XỬ LÝ' hoặc 'CHƯA THANH TOÁN'
+router.delete("/:id", authorizeRole("ADMIN"), OrderController.cancel);
 
 module.exports = router;
