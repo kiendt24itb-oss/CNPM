@@ -1,338 +1,167 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+:root {
+  --coffee-main: #634832;
+  --coffee-light: #fdfaf8;
+  --coffee-border: #a68b7c;
+  --coffee-placeholder: #b29e8f;
 }
 
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f5f5f5;
-  color: #333;
-  padding: 0px;
+  background-color: transparent;
+  margin: 0;
+  color: var(--coffee-main);
+  overflow: hidden; /* Giữ body không cuộn để modal cuộn nội bộ */
 }
 
-.order-container {
-  padding-left: 260px;
-  padding-top: 80px;
-}
-
-/* --- 2. HEADER STICKY --- */
-.order-header {
+.modal-container {
+  background-color: white;
+  width: min(680px, 95vw);
+  max-height: 95vh; /* Tăng độ cao tối đa để thoải mái hơn */
+  margin: 10px auto;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
   display: flex;
-  align-items: center;
-  gap: 15px;
-  padding: 12px 20px;
-  background: #fff;
-  border-bottom: 1px solid #e0e0e0;
-
-  position: fixed;
-  top: 70px; /* nằm dưới header chính */
-  left: 260px; /* 👈 bằng width sidebar */
-  right: 0;
-
-  z-index: 999;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.total-summary {
-  font-size: 13px;
-  color: #777;
-}
-
-.total-summary strong {
-  font-weight: 600;
-  color: #5d4037;
-  font-size: 16px;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-left: auto;
-}
-
-/* --- 3. SEARCH BOX --- */
-.search-box {
-  display: flex;
-  align-items: center;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 6px 12px;
-  min-width: 220px;
-  transition: all 0.3s ease;
-}
-
-.search-box:focus-within {
-  border-color: #5d4037;
-  box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.1);
-}
-
-.search-box i {
-  color: #999;
-  margin-right: 8px;
-  font-size: 13px;
-}
-
-.search-box input {
-  border: none;
-  outline: none;
-  width: 100%;
-  font-size: 13px;
-  background: transparent;
-}
-
-/* --- 4. BUTTONS --- */
-.btn-add,
-.btn-dropdown {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.2s;
-}
-
-.btn-add {
-  background: #5d4037;
-  color: #fff;
-  border: none;
-}
-.btn-add:hover {
-  background: #4e342e;
-}
-
-.btn-dropdown {
-  background: #fff;
-  border: 1px solid #5d4037;
-  color: #5d4037;
-}
-.btn-dropdown:hover {
-  background: #5d4037;
-  color: #fff;
-}
-
-/* --- 5. GRID SYSTEM --- */
-.order-container {
-  padding: 18px;
-  margin-top: 110px; /* để không bị đè header cố định */
-  width: 100%;
-  max-width: calc(100vw - 300px);
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.order-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 15px;
-  width: 100%;
-  min-height: 1px;
-}
-
-@media (min-width: 1600px) {
-  .order-grid {
-    grid-template-columns: repeat(5, 1fr);
-  }
-}
-@media (max-width: 1200px) {
-  .order-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-@media (max-width: 768px) {
-  .order-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 420px) {
-  .order-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* --- 6. ORDER CARD & ICON STYLING --- */
-.order-card {
-  background: #fff;
-  border: 1px solid #e8e8e8;
-  border-radius: 8px;
-  padding: 12px;
-  display: flex;
-  min-width: 0;
   flex-direction: column;
-  height: 205px;
-  transition: all 0.2s ease;
 }
 
-.order-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
-}
-
-.card-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.order-id {
-  font-size: 12px;
-  font-weight: 700;
-  color: #5d4037;
-}
-
-.status-badge {
-  font-size: 9px;
-  padding: 2px 7px;
-  border-radius: 10px;
-  color: #fff;
-  font-weight: 600;
+.modal-header {
+  background-color: var(--coffee-main);
+  color: white;
+  text-align: center;
+  padding: 18px;
+  font-size: 22px;
+  font-weight: bold;
   text-transform: uppercase;
+  letter-spacing: 1px;
+  flex-shrink: 0;
 }
 
-.card-body {
-  flex: 1;
+.modal-body {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+  overflow-y: auto; /* Cho phép cuộn bên trong nội dung */
+  max-height: 70vh; /* Giới hạn chiều cao phần thân để hiện thanh cuộn */
 }
 
-.info-row {
+/* Custom thanh cuộn */
+.modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+.modal-body::-webkit-scrollbar-thumb {
+  background: rgba(99, 72, 50, 0.3);
+  border-radius: 8px;
+}
+.modal-body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.upload-area {
+  border: 2px dashed var(--coffee-border);
+  border-radius: 12px;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: var(--coffee-light);
+  position: relative;
+  overflow: hidden;
+  transition: 0.3s;
+}
+
+#previewImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+  position: absolute;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid #dcd0c6;
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--coffee-main);
+  outline: none;
+  box-sizing: border-box;
+  margin-top: 5px;
+}
+
+textarea {
+  height: 100px;
+  resize: none;
+}
+
+.modal-footer {
+  padding: 15px 25px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  border-top: 1px solid #f0e6dd;
+  background: white;
+  flex-shrink: 0;
+}
+
+.btn-cancel {
+  background: white;
+  border: 1.5px solid #d32f2f;
+  padding: 10px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
-  color: #555;
-  margin-bottom: 6px;
+  color: #d32f2f;
 }
 
-/* ĐÂY LÀ PHẦN CSS CHO ICON NGƯỜI VÀ BÀN MÀ BẠN CẦN */
-.info-row i {
-  background-color: #fdfaf8; /* Nền nâu cực nhạt */
-  color: #8d6e63; /* Màu nâu cafe nhẹ */
-  font-size: 12px;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 6px;
-  border: 1px solid #efebe9;
-}
-
-/* Hiệu ứng khi hover vào card thì icon đổi màu đậm hơn */
-.order-card:hover .info-row i {
-  background-color: #5d4037;
-  color: #fff;
-  border-color: #5d4037;
-  transition: all 0.3s;
-}
-
-.total-price-row {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px dashed #eee;
-  color: #5d4037;
-  font-weight: 700;
-  font-size: 13px;
-}
-.total-price-label {
-  font-weight: 400;
-  color: #888;
-  font-size: 12px;
-}
-
-/* --- 7. CARD ACTIONS --- */
-.card-actions-group {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-top: 8px;
-}
-
-.btn-view {
-  width: 100%;
-  background: #fdfaf8;
-  color: #5d4037;
-  border: 1px solid #5d4037;
-  padding: 5px;
-  border-radius: 4px;
-  font-size: 11px;
-  font-weight: 600;
+.btn-save {
+  background-color: var(--coffee-main);
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 12px;
   cursor: pointer;
+  font-weight: bold;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-}
-.btn-view i {
-  font-size: 12px;
-}
-.btn-view:hover {
-  background: #5d4037;
-  color: #fff;
+  gap: 8px;
 }
 
-.action-row {
-  display: flex;
-  gap: 5px;
-}
-
-.btn-edit,
-.btn-delete {
-  flex: 1;
-  padding: 4px;
-  background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 11px;
-  color: #888;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-edit:hover {
-  border-color: #5d4037;
-  color: #5d4037;
-}
-.btn-delete:hover {
-  border-color: #c62828;
-  color: #c62828;
-}
-
-.order-container {
-  padding: 20px;
-  max-width: 1400px;
-  margin: 0 auto; /* Căn giữa nhưng bị giới hạn 1400px */
-}
-
-/* Add Order Overlay */
-.add-order-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-
-.add-order-box {
-  background: transparent;
-  width: 720px;
-  height: auto;
-  max-height: 90vh;
-  border-radius: 15px;
+.close-icon {
+  width: 14px;
+  height: 14px;
   position: relative;
-  box-shadow: none;
+  display: inline-block;
+}
+.close-icon::before,
+.close-icon::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background-color: currentColor;
+  top: 6px;
+  left: 0;
+}
+.close-icon::before {
+  transform: rotate(45deg);
+}
+.close-icon::after {
+  transform: rotate(-45deg);
 }

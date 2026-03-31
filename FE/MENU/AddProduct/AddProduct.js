@@ -32,3 +32,27 @@ function previewFile(event) {
     reader.readAsDataURL(file);
   }
 }
+function closeAddProductModal() {
+  if (window.parent && typeof window.parent.closeAddProduct === "function") {
+    window.parent.closeAddProduct();
+    return;
+  }
+  if (window.close) {
+    window.close();
+  }
+}
+
+document
+  .getElementById("cancelBtn")
+  .addEventListener("click", function (event) {
+    event.preventDefault();
+    closeAddProductModal();
+  });
+
+document
+  .getElementById("productForm")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
+    console.log("Lưu sản phẩm...");
+    closeAddProductModal();
+  });

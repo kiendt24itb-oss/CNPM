@@ -1,50 +1,34 @@
-// DATA giả
-const ingredients = ["Cà phê", "Sữa", "Đường", "Trà", "Matcha"];
-const units = ["ml", "gram", "cái", "muỗng"];
+const categories = [
+  { name: "Cà phê truyền thống", icon: "☕" },
+  { name: "Trà & Trái cây", icon: "🍵" },
+  { name: "Bánh & Tráng miệng", icon: "🍰" },
+  { name: "Đồ uống đá xay", icon: "🍧" },
+];
 
-// Tạo option
-function renderOptions(arr) {
-  return arr.map(item => `<option>${item}</option>`).join("");
-}
-
-// Tạo row
-function createRow() {
-  const div = document.createElement("div");
-  div.className = "table-row";
-
-  div.innerHTML = `
-    <select class="select-nguyenlieu">
-      ${renderOptions(ingredients)}
-    </select>
-
-    <input class="input-qty" type="number" value="1" min="0" />
-
-    <select class="select-unit">
-      ${renderOptions(units)}
-    </select>
-
-    <input class="input-note" type="text" placeholder="Ghi chú..." />
-
-    <button class="delete-btn" onclick="removeRow(this)">
-      <i class="fa fa-trash"></i>
-    </button>
-  `;
-
-  return div;
-}
-
-// Add row
-function addRow() {
-  const list = document.getElementById("list");
-  list.appendChild(createRow());
-}
-
-// Delete row
-function removeRow(btn) {
-  btn.parentElement.remove();
-}
-
-// Init 1 dòng
-window.onload = () => {
-  addRow();
+window.onload = function () {
+  const select = document.getElementById("category");
+  categories.forEach((item) => {
+    let option = document.createElement("option");
+    option.value = item.name;
+    option.text = `${item.icon} ${item.name}`;
+    select.appendChild(option);
+  });
 };
+
+function previewFile(event) {
+  const file = event.target.files[0];
+  const preview = document.getElementById("previewImage");
+  const camIcon = document.getElementById("camIcon");
+  const text = document.getElementById("uploadText");
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      preview.src = e.target.result;
+      preview.style.display = "block";
+      camIcon.style.display = "none";
+      text.style.display = "none";
+    };
+    reader.readAsDataURL(file);
+  }
+}

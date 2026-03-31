@@ -1,0 +1,39 @@
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+<link rel="stylesheet" href="../STAFF/Staff.css" />
+
+<header>
+  <div class="header-left">
+    <div class="search-bar">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Tìm kiếm nhân viên..." />
+    </div>
+    <select class="filter-dropdown">
+      <option value="">Tất cả chức vụ</option>
+      <option value="manager">Quản lý</option>
+      <option value="staff">Nhân viên</option>
+    </select>
+  </div>
+  <button class="btn-add">+ Thêm nhân viên</button>
+</header>
+
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th>Mã NV</th>
+        <th>Hình ảnh</th>
+        <th>Tên nhân viên</th>
+        <th>Số điện thoại</th>
+        <th>Email</th>
+        <th>Chức vụ</th>
+        <th>Thao tác</th>
+      </tr>
+    </thead>
+    <tbody id="employee-list"></tbody>
+  </table>
+</div>
+
+<script src="../STAFF/Staff.js"></script>
