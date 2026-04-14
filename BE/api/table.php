@@ -1,73 +1,131 @@
 <?php
-require_once __DIR__ . "/../controllers/TableController.php";
+require_once __DIR__ . "/../controllers/table.php";
 
-// Thiết lập Header để trả về định dạng JSON
+// ================= HEADER =================
 header("Content-Type: application/json; charset=utf-8");
-header("Access-Control-Allow-Origin: *"); // Cho phép gọi API từ các domain khác nếu cần
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
 
+// ================= HANDLE CORS PREFLIGHT =================
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+// ================= INIT =================
 $controller = new TableController();
 $method = $_SERVER["REQUEST_METHOD"];
 
-// Lấy các tham số từ URL
+// ================= GET PARAMS =================
 $id = isset($_GET['id']) ? intval($_GET['id']) : null;
-$status = isset($_GET['status']) ? $_GET['status'] : null;
-$search = isset($_GET['search']) ? $_GET['search'] : null;
+$status = $_GET['status'] ?? null;
+$search = $_GET['search'] ?? null;
 
-switch ($method) {
-    case 'GET':
-        /**
-         * Lấy danh sách bàn. 
-         * Có thể kèm theo filter ?status=Trống hoặc ?search=101
-         */
-        echo json_encode($controller->index([
-            'status' => $status,
-            'search' => $search
-        ]));
-        break;
+// ================= RESPONSE HELPER =================
+function response($data, $code = 200) {
+    http_response_code($code);
+    echo json_encode($data);
+    exit();
+}
 
-    case 'POST':
-        /**
-         * Thêm bàn mới.
-         * Dữ liệu nhận từ FormData hoặc JSON body.
-         */
-        // Nếu gửi bằng JSON body
-        $data = json_decode(file_get_contents("php://input"), true);
-        
-        // Nếu gửi bằng Form thông thường ($_POST)
-        if (!$data) {
-            $data = $_POST;
-        }
+// ================= ROUTER =================
+try {
+    switch ($method) {
 
-        echo json_encode($controller->store($data));
-        break;
+        // ================= GET =================
+        case 'GET':
+            $params = [];
 
-    case 'PUT':
-        /**
-         * Cập nhật thông tin bàn hoặc trạng thái dọn dẹp.
-         * URL yêu cầu dạng: api/tables.php?id=5
-         */
-        if ($id) {
+            if (!empty($status) && $status !== 'Tất cả') {
+                $params['status'] = $status;
+            }
+
+            if (!empty($search)) {
+                $params['search'] = $search;
+            }
+
+            $result = $controller->index($params);
+
+            response($result, $result['success'] ? 200 : 400);
+            break;
+
+        // ================= POST =================
+        case 'POST':
+            // Ưu tiên JSON
             $data = json_decode(file_get_contents("php://input"), true);
-            echo json_encode($controller->update($id, $data));
-        } else {
-            echo json_encode(["success" => false, "message" => "Thiếu ID bàn cần cập nhật"]);
-        }
-        break;
 
-    case 'DELETE':
-        /**
-         * Xóa bàn. URL: api/tables.php?id=5
-         */
-        if ($id) {
-            echo json_encode($controller->delete($id));
-        } else {
-            echo json_encode(["success" => false, "message" => "Thiếu ID bàn cần xóa"]);
-        }
-        break;
+            // fallback FormData
+            if (!$data) {
+                $data = $_POST;
+            }
 
-    default:
-        http_response_code(405);
-        echo json_encode(["success" => false, "message" => "Phương thức không được hỗ trợ"]);
-        break;
+            if (empty($data)) {
+                response([
+                    "success" => false,
+                    "message" => "Dữ liệu gửi lên không hợp lệ"
+                ], 400);
+            }
+
+            $result = $controller->store($data);
+
+            response($result, $result['success'] ? 200 : 400);
+            break;
+
+        // ================= PUT =================
+        case 'PUT':
+            if (!$id) {
+                response([
+                    "success" => false,
+                    "message" => "Thiếu ID bàn cần cập nhật"
+                ], 400);
+            }
+
+            $data = json_decode(file_get_contents("php://input"), true);
+
+            // fallback nếu gửi dạng x-www-form-urlencoded
+            if (!$data) {
+                parse_str(file_get_contents("php://input"), $data);
+            }
+
+            if (empty($data)) {
+                response([
+                    "success" => false,
+                    "message" => "Dữ liệu cập nhật không hợp lệ"
+                ], 400);
+            }
+
+            $result = $controller->update($id, $data);
+
+            response($result, $result['success'] ? 200 : 400);
+            break;
+
+        // ================= DELETE =================
+        case 'DELETE':
+            if (!$id) {
+                response([
+                    "success" => false,
+                    "message" => "Thiếu ID bàn cần xóa"
+                ], 400);
+            }
+
+            $result = $controller->delete($id);
+
+            response($result, $result['success'] ? 200 : 400);
+            break;
+
+        // ================= DEFAULT =================
+        default:
+            response([
+                "success" => false,
+                "message" => "Phương thức không được hỗ trợ"
+            ], 405);
+    }
+
+} catch (Exception $e) {
+    response([
+        "success" => false,
+        "message" => "Lỗi server",
+        "error" => $e->getMessage()
+    ], 500);
 }

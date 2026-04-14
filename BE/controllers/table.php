@@ -18,39 +18,45 @@ class TableController {
      * Lấy danh sách bàn kèm thông tin đơn hàng (Số khách, Số món)
      * Hỗ trợ tìm kiếm và lọc theo trạng thái
      */
-    public function index($params = []) {
-        // 1. Nếu có keyword tìm kiếm (theo số bàn hoặc khu vực)
-        if (!empty($params['search'])) {
-            $data = $this->tableModel->searchTables($params['search']);
-        } 
-        // 2. Nếu có lọc theo trạng thái (EMPTY, OCCUPIED)
-        elseif (!empty($params['status'])) {
-            // Chuyển đổi trạng thái từ tiếng Việt (Giao diện) sang Enum (Database) nếu cần
-            $statusMap = [
-                'Trống' => 'EMPTY',
-                'Đang dùng' => 'OCCUPIED'
-            ];
-            $dbStatus = $statusMap[$params['status']] ?? $params['status'];
-            $data = $this->tableModel->getTablesByStatus($dbStatus);
-        } 
-        // 3. Mặc định lấy tất cả
-        else {
-            $data = $this->tableModel->getAllTablesWithOrders();
-        }
+   public function index($params = []) {
 
-        // Lấy thêm thống kê tổng quan để cập nhật header-row
-        $stats = $this->tableModel->getTableStats();
-
-        return [
-            "success" => true,
-            "data" => $data,
-            "stats" => [
-                "total" => $stats['total'] ?? 0,
-                "occupied" => $stats['occupied'] ?? 0
-            ]
-        ];
+    // 1. search
+    if (!empty($params['search'])) {
+        $data = $this->tableModel->searchTables($params['search']);
     }
 
+    // 2. filter theo khu vực (🔥 thêm đoạn này)
+    elseif (!empty($params['area'])) {
+        $data = $this->tableModel->getTablesByArea($params['area']);
+    }
+
+    // 3. filter theo trạng thái (giữ lại nếu cần)
+    elseif (!empty($params['status'])) {
+        $statusMap = [
+            'Trống' => 'EMPTY',
+            'Đang dùng' => 'OCCUPIED'
+        ];
+        $dbStatus = $statusMap[$params['status']] ?? $params['status'];
+
+        $data = $this->tableModel->getTablesByStatus($dbStatus);
+    }
+
+    // 4. default
+    else {
+        $data = $this->tableModel->getAllTablesWithOrders();
+    }
+
+    $stats = $this->tableModel->getTableStats();
+
+    return [
+        "success" => true,
+        "data" => $data,
+        "stats" => [
+            "total" => $stats['total'] ?? 0,
+            "occupied" => $stats['occupied'] ?? 0
+        ]
+    ];
+}
     /**
      * Thêm bàn mới (Chỉ Admin mới có quyền)
      */

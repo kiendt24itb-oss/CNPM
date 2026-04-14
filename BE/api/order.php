@@ -1,69 +1,140 @@
 <?php
 require_once __DIR__ . "/../controllers/order.php";
 
-// Thiết lập Header để làm việc với JSON
+// ================= HEADER =================
 header("Content-Type: application/json; charset=utf-8");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
 
+// ================= HANDLE CORS =================
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+// ================= INIT =================
 $controller = new OrderController();
 $method = $_SERVER["REQUEST_METHOD"];
 
-// Lấy ID từ URL nếu có (ví dụ: api/order.php?id=123)
+// ================= PARAMS =================
+$action = $_GET['action'] ?? null;
 $id = isset($_GET['id']) ? intval($_GET['id']) : null;
 
-switch ($method) {
-    case 'GET':
-        if ($id) {
-            // Xem chi tiết một đơn hàng cụ thể
-            echo json_encode($controller->show($id));
-        } elseif (isset($_GET['action']) && $_GET['action'] === 'init-data') {
-            // Lấy ds bàn trống và món ăn để hiện trong modal AddOrder
-            echo json_encode($controller->getCreateData());
-        } else {
-            // Lấy danh sách tất cả hóa đơn (cho trang Order.html)
-            echo json_encode($controller->index());
-        }
-        break;
+// ================= RESPONSE HELPER =================
+function response($data, $code = 200) {
+    http_response_code($code);
+    echo json_encode($data);
+    exit();
+}
 
-    case 'POST':
-        /**
-         * Khi thêm đơn hàng, JS sẽ gửi chuỗi JSON lên qua body.
-         * Dùng json_decode để chuyển thành mảng PHP.
-         */
-        $json_data = file_get_contents("php://input");
-        $data = json_decode($json_data, true);
+// ================= ROUTER =================
+try {
+    switch ($method) {
 
-        if (!$data) {
-            echo json_encode(["success" => false, "message" => "Dữ liệu không hợp lệ"]);
+        // ================= GET =================
+        case 'GET':
+
+            // 👉 load data cho Add Order (bàn + menu)
+            if ($action === 'create') {
+                $result = $controller->create();
+                response($result, $result['success'] ? 200 : 400);
+            }
+
+            // 👉 xem chi tiết 1 order
+            elseif ($id) {
+                $result = $controller->show($id);
+                response($result, $result['success'] ? 200 : 400);
+            }
+
+            // 👉 danh sách order
+            else {
+                $result = $controller->index();
+                response($result, $result['success'] ? 200 : 400);
+            }
+
             break;
-        }
 
-        echo json_encode($controller->store($data));
-        break;
+        // ================= POST =================
+        case 'POST':
 
-    case 'PATCH':
-    case 'PUT':
-        /**
-         * Thường dùng để cập nhật trạng thái Thanh toán (markAsPaid).
-         * URL ví dụ: api/order.php?id=123&action=pay
-         */
-        if ($id && isset($_GET['action']) && $_GET['action'] === 'pay') {
-            echo json_encode($controller->markAsPaid($id));
-        } else {
-            echo json_encode(["success" => false, "message" => "Thiếu ID hoặc hành động không hợp lệ"]);
-        }
-        break;
+            $data = json_decode(file_get_contents("php://input"), true);
 
-    case 'DELETE':
-        // Xóa đơn hàng (Chỉ dành cho Admin)
-        if ($id) {
-            echo json_encode($controller->delete($id));
-        } else {
-            echo json_encode(["success" => false, "message" => "Thiếu ID đơn hàng"]);
-        }
-        break;
+            // fallback FormData
+            if (!$data) {
+                $data = $_POST;
+            }
 
-    default:
-        http_response_code(405);
-        echo json_encode(["success" => false, "message" => "Phương thức không hỗ trợ"]);
-        break;
+            if (empty($data)) {
+                response([
+                    "success" => false,
+                    "message" => "Dữ liệu không hợp lệ"
+                ], 400);
+            }
+
+            // 👉 thanh toán
+            if ($action === 'pay') {
+                if (!$id) {
+                    response([
+                        "success" => false,
+                        "message" => "Thiếu ID order"
+                    ], 400);
+                }
+
+                $result = $controller->pay($id);
+            }
+
+            // 👉 tạo order
+            else {
+                $result = $controller->store($data);
+            }
+
+            response($result, $result['success'] ? 200 : 400);
+            break;
+
+            case 'PUT':
+    if (!$id) {
+        response(["success" => false, "message" => "Thiếu ID"], 400);
+    }
+
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if (!$data) {
+        parse_str(file_get_contents("php://input"), $data);
+    }
+
+    $result = $controller->update($id, $data);
+
+    response($result, $result['success'] ? 200 : 400);
+    break;
+
+        // ================= DELETE =================
+        case 'DELETE':
+
+            if (!$id) {
+                response([
+                    "success" => false,
+                    "message" => "Thiếu ID order"
+                ], 400);
+            }
+
+            $result = $controller->delete($id);
+
+            response($result, $result['success'] ? 200 : 400);
+            break;
+
+        // ================= DEFAULT =================
+        default:
+            response([
+                "success" => false,
+                "message" => "Phương thức không hỗ trợ"
+            ], 405);
+    }
+
+} catch (Exception $e) {
+    response([
+        "success" => false,
+        "message" => "Lỗi server",
+        "error" => $e->getMessage()
+    ], 500);
 }

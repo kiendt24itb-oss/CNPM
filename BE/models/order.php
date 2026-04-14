@@ -1,88 +1,172 @@
 <?php
 require_once __DIR__ . "/../config/database.php";
 
-class Order {
+class OrderModel {
     private $conn;
 
     public function __construct() {
         $this->conn = Database::getInstance()->connect();
     }
 
-    /**
-     * Lấy dữ liệu khởi tạo cho Modal Add Order
-     * Bao gồm: Bàn trống + Danh mục & Món ăn
-     */
-    public function getInitializeData() {
-        $data = [
-            'tables' => $this->getAvailableTables(),
-            'menu' => $this->getFullMenu()
-        ];
-        return $data;
-    }
-
-    // 1. Lấy danh sách bàn ĐANG TRỐNG
+    // =========================================
+    // 1. LẤY DANH SÁCH BÀN TRỐNG
+    // =========================================
     public function getAvailableTables() {
-        $sql = "SELECT table_id, table_number, area, capacity 
-                FROM tables 
-                WHERE status = 'EMPTY' 
-                ORDER BY area ASC, table_number ASC";
-        $result = $this->conn->query($sql);
-        
-        $tables = [];
-        while ($row = $result->fetch_assoc()) {
-            $tables[] = $row;
-        }
-        return $tables;
+        $sql = "SELECT * FROM tables 
+                WHERE status = 'EMPTY'
+                ORDER BY table_number ASC";
+
+        $res = $this->conn->query($sql);
+        return $res->fetch_all(MYSQLI_ASSOC);
     }
 
-    // 2. Lấy danh sách món ăn từ menu (Kèm tên danh mục để dễ phân loại)
-    public function getFullMenu() {
-        $sql = "SELECT m.menu_id, m.name, m.price, m.image, c.category_name 
-                FROM menu m
-                LEFT JOIN categories c ON m.category_id = c.category_id
-                ORDER BY c.category_name ASC, m.name ASC";
-        $result = $this->conn->query($sql);
+    // =========================================
+    // 2. LẤY MENU (CHO DROPDOWN CHỌN MÓN)
+    // =========================================
+    public function getMenuItems() {
+        $sql = "SELECT menu_id, name, price, image 
+                FROM menu
+                ORDER BY name ASC";
 
-        $menu = [];
-        while ($row = $result->fetch_assoc()) {
-            $menu[] = $row;
-        }
-        return $menu;
+        $res = $this->conn->query($sql);
+        return $res->fetch_all(MYSQLI_ASSOC);
     }
 
-    // 3. Hàm lưu đơn hàng (Transaction)
-    public function saveOrder($tableId, $customerName, $customerCount, $items, $isPaid = false) {
+    // =========================================
+    // 3. TẠO ORDER
+    // =========================================
+    public function createOrder($table_id, $customer_name, $customer_count, $status) {
+        $sql = "INSERT INTO orders (table_id, customer_name, customer_count, status) 
+                VALUES (?, ?, ?, ?)";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("isis", $table_id, $customer_name, $customer_count, $status);
+        $stmt->execute();
+
+        return $this->conn->insert_id; // trả về order_id
+    }
+
+    // =========================================
+    // 4. THÊM ORDER ITEMS
+    // =========================================
+    public function addOrderItem($order_id, $menu_id, $quantity, $price) {
+        $sql = "INSERT INTO order_items (order_id, menu_id, quantity, price) 
+                VALUES (?, ?, ?, ?)";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("iiid", $order_id, $menu_id, $quantity, $price);
+        return $stmt->execute();
+    }
+
+    // =========================================
+    // 5. TÍNH VÀ CẬP NHẬT TOTAL
+    // =========================================
+    public function updateOrderTotal($order_id) {
+        $sql = "UPDATE orders 
+                SET total = (
+                    SELECT SUM(quantity * price) 
+                    FROM order_items 
+                    WHERE order_id = ?
+                )
+                WHERE order_id = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("ii", $order_id, $order_id);
+        return $stmt->execute();
+    }
+
+    // =========================================
+    // 6. TẠO ORDER FULL (DÙNG 1 LẦN)
+    // =========================================
+    public function createFullOrder($table_id, $customer_name, $customer_count, $status, $items) {
         $this->conn->begin_transaction();
+
         try {
-            $total = 0;
+            // 1. tạo order
+            $order_id = $this->createOrder($table_id, $customer_name, $customer_count, $status);
+
+            // 2. thêm items
             foreach ($items as $item) {
-                $total += $item['price'] * $item['quantity'];
+                $this->addOrderItem(
+                    $order_id,
+                    $item['menu_id'],
+                    $item['quantity'],
+                    $item['price']
+                );
             }
 
-            $status = $isPaid ? 'PAID' : 'UNPAID';
-            $paid_at = $isPaid ? date('Y-m-d H:i:s') : null;
-
-            // Insert Order
-            $sql = "INSERT INTO orders (table_id, customer_name, customer_count, total, status, paid_at) 
-                    VALUES (?, ?, ?, ?, ?, ?)";
-            $stmt = $this->conn->prepare($sql);
-            $stmt->bind_param("isidss", $tableId, $customerName, $customerCount, $total, $status, $paid_at);
-            $stmt->execute();
-            $orderId = $this->conn->insert_id;
-
-            // Insert Order Items
-            $sqlItem = "INSERT INTO order_items (order_id, menu_id, quantity, price) VALUES (?, ?, ?, ?)";
-            $stmtItem = $this->conn->prepare($sqlItem);
-            foreach ($items as $item) {
-                $stmtItem->bind_param("iiid", $orderId, $item['menu_id'], $item['quantity'], $item['price']);
-                $stmtItem->execute();
-            }
+            // 3. update total
+            $this->updateOrderTotal($order_id);
 
             $this->conn->commit();
-            return ["success" => true, "order_id" => $orderId];
+
+            return [
+                "success" => true,
+                "order_id" => $order_id
+            ];
+
         } catch (Exception $e) {
             $this->conn->rollback();
-            return ["success" => false, "message" => $e->getMessage()];
+            return [
+                "success" => false,
+                "error" => $e->getMessage()
+            ];
         }
     }
+
+    // =========================================
+    // 7. LẤY DANH SÁCH ORDER (HIỂN THỊ GRID)
+    // =========================================
+    public function getOrders() {
+        $sql = "SELECT o.*, t.table_number 
+                FROM orders o
+                LEFT JOIN tables t ON o.table_id = t.table_id
+                ORDER BY o.created_at DESC";
+
+        $res = $this->conn->query($sql);
+        return $res->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // =========================================
+    // 8. LẤY CHI TIẾT ORDER
+    // =========================================
+    public function getOrderDetail($order_id) {
+        $sql = "SELECT oi.*, m.name 
+                FROM order_items oi
+                JOIN menu m ON oi.menu_id = m.menu_id
+                WHERE oi.order_id = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $order_id);
+        $stmt->execute();
+
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    // =========================================
+    // 9. THANH TOÁN
+    // =========================================
+    public function payOrder($order_id) {
+        $sql = "UPDATE orders 
+                SET status = 'PAID'
+                WHERE order_id = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $order_id);
+        return $stmt->execute();
+    }
+
+    public function updateStatus($id, $status) {
+    $sql = "UPDATE orders SET status = ? WHERE order_id = ?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param("si", $status, $id);
+    return $stmt->execute();
+}
+
+public function deleteOrder($id) {
+    $sql = "DELETE FROM orders WHERE order_id = ?";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bind_param("i", $id);
+    return $stmt->execute();
+}
 }

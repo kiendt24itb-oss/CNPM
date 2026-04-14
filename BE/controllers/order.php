@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../models/order.php";
+require_once __DIR__ . "/../models/Order.php";
 require_once __DIR__ . "/../middleware/authMiddleware.php";
 
 class OrderController {
@@ -7,106 +7,175 @@ class OrderController {
     private $auth;
 
     public function __construct() {
-        $this->orderModel = new Order();
+        $this->orderModel = new OrderModel();
         $this->auth = new AuthMiddleware();
-        
-        // Cần đăng nhập mới có thể thao tác với đơn hàng
+
+        // Nhân viên đăng nhập mới được thao tác
         $this->auth->checkLogin();
     }
 
-    /**
-     * 1. Lấy dữ liệu để đổ vào Modal "Thêm đơn hàng"
-     * Bao gồm: Bàn trống và Danh sách thực đơn
-     */
-    public function getCreateData() {
+    // =========================================
+    // 1. LOAD DATA CHO ADD ORDER (🔥 QUAN TRỌNG)
+    // =========================================
+    public function create() {
         try {
-            $data = $this->orderModel->getInitializeData();
             return [
                 "success" => true,
-                "tables" => $data['tables'],
-                "menu" => $data['menu']
+                "tables" => $this->orderModel->getAvailableTables(), // bàn trống
+                "menu" => $this->orderModel->getMenuItems() // menu + giá
             ];
         } catch (Exception $e) {
-            return ["success" => false, "message" => "Không thể lấy dữ liệu khởi tạo"];
-        }
-    }
-
-    /**
-     * 2. Lưu đơn hàng mới
-     * Xử lý dữ liệu từ form gửi lên (JS fetch)
-     */
-    public function store($data) {
-        // Kiểm tra dữ liệu đầu vào cơ bản
-        if (empty($data['table_id']) && empty($data['customer_name'])) {
-            return ["success" => false, "message" => "Vui lòng chọn bàn hoặc nhập tên khách hàng"];
-        }
-
-        if (empty($data['items']) || count($data['items']) == 0) {
-            return ["success" => false, "message" => "Đơn hàng phải có ít nhất một món"];
-        }
-
-        // Gọi Model xử lý lưu DB (đã có Transaction bên trong Model)
-        $result = $this->orderModel->saveOrder(
-            $data['table_id'] ?? null,
-            $data['customer_name'],
-            $data['customer_count'] ?? 1,
-            $data['items'],
-            $data['is_paid'] ?? false // Nút "Xác nhận" (false) hoặc "Thanh toán" (true)
-        );
-
-        if ($result['success']) {
             return [
-                "success" => true, 
-                "message" => "Tạo đơn hàng thành công", 
-                "order_id" => $result['order_id']
+                "success" => false,
+                "message" => "Không thể load dữ liệu: " . $e->getMessage()
             ];
-        } else {
-            return ["success" => false, "message" => "Lỗi: " . $result['message']];
         }
     }
 
-    /**
-     * 3. Lấy danh sách tất cả đơn hàng (Hiển thị tại màn hình chính Order)
-     */
+    // =========================================
+    // 2. TẠO ORDER
+    // =========================================
+    public function store($data) {
+        // validate cơ bản
+        if (empty($data['table_id']) || empty($data['items'])) {
+            return [
+                "success" => false,
+                "message" => "Thiếu bàn hoặc danh sách món"
+            ];
+        }
+
+        try {
+            $result = $this->orderModel->createFullOrder(
+                $data['table_id'],
+                $data['customer_name'] ?? '',
+                $data['customer_count'] ?? 1,
+                $data['status'] ?? 'UNPAID',
+                $data['items']
+            );
+
+            return $result;
+
+        } catch (Exception $e) {
+            return [
+                "success" => false,
+                "message" => "Lỗi tạo đơn: " . $e->getMessage()
+            ];
+        }
+    }
+
+    // =========================================
+    // 3. LẤY DANH SÁCH ORDER (HIỂN THỊ GRID)
+    // =========================================
     public function index() {
-        $orders = $this->orderModel->getAllOrders();
+        try {
+            $data = $this->orderModel->getOrders();
+
+            return [
+                "success" => true,
+                "data" => $data,
+                "total" => count($data)
+            ];
+
+        } catch (Exception $e) {
+            return [
+                "success" => false,
+                "message" => "Không thể lấy danh sách đơn"
+            ];
+        }
+    }
+
+    // =========================================
+    // 4. CHI TIẾT ORDER
+    // =========================================
+    public function show($id) {
+        if (empty($id)) {
+            return [
+                "success" => false,
+                "message" => "Thiếu ID đơn hàng"
+            ];
+        }
+
+        try {
+            $items = $this->orderModel->getOrderDetail($id);
+
+            return [
+                "success" => true,
+                "items" => $items
+            ];
+
+        } catch (Exception $e) {
+            return [
+                "success" => false,
+                "message" => "Không thể lấy chi tiết đơn"
+            ];
+        }
+    }
+
+    // =========================================
+    // 5. THANH TOÁN
+    // =========================================
+    public function pay($id) {
+        if (empty($id)) {
+            return [
+                "success" => false,
+                "message" => "Thiếu ID đơn hàng"
+            ];
+        }
+
+        try {
+            $result = $this->orderModel->payOrder($id);
+
+            return $result
+                ? ["success" => true, "message" => "Thanh toán thành công"]
+                : ["success" => false, "message" => "Thanh toán thất bại"];
+
+        } catch (Exception $e) {
+            return [
+                "success" => false,
+                "message" => "Lỗi thanh toán: " . $e->getMessage()
+            ];
+        }
+    }
+
+    // =========================================
+    // 6. XÓA ORDER
+    // =========================================
+    public function delete($id) {
+    if (empty($id)) {
         return [
-            "success" => true,
-            "data" => $orders,
-            "total" => count($orders)
+            "success" => false,
+            "message" => "Thiếu ID đơn"
         ];
     }
 
-    /**
-     * 4. Xem chi tiết một đơn hàng
-     */
-    public function show($id) {
-        $details = $this->orderModel->getOrderDetails($id);
-        if ($details) {
-            return ["success" => true, "data" => $details];
-        }
-        return ["success" => false, "message" => "Không tìm thấy chi tiết đơn hàng"];
-    }
-
-    /**
-     * 5. Cập nhật trạng thái Thanh toán (Chỉ dành cho đơn đang UNPAID)
-     */
-    public function markAsPaid($id) {
-        $result = $this->orderModel->markAsPaid($id);
-        return $result 
-            ? ["success" => true, "message" => "Thanh toán thành công, bàn đã được giải phóng"]
-            : ["success" => false, "message" => "Lỗi khi cập nhật trạng thái thanh toán"];
-    }
-
-    /**
-     * 6. Xóa đơn hàng (Chỉ Admin mới có quyền xóa để tránh gian lận)
-     */
-    public function destroy($id) {
-        $this->auth->checkAdmin();
-        
+    try {
         $result = $this->orderModel->deleteOrder($id);
-        return $result 
-            ? ["success" => true, "message" => "Đã xóa đơn hàng"]
-            : ["success" => false, "message" => "Không thể xóa đơn hàng này"];
+
+        return $result
+            ? ["success" => true, "message" => "Đã xóa đơn"]
+            : ["success" => false, "message" => "Xóa thất bại"];
+
+    } catch (Exception $e) {
+        return [
+            "success" => false,
+            "message" => "Lỗi xóa đơn: " . $e->getMessage()
+        ];
     }
+}
+
+    public function update($id, $data) {
+    if (empty($id)) {
+        return ["success" => false, "message" => "Thiếu ID"];
+    }
+
+    if (!isset($data['status'])) {
+        return ["success" => false, "message" => "Thiếu status"];
+    }
+
+    $result = $this->orderModel->updateStatus($id, $data['status']);
+
+    return $result
+        ? ["success" => true, "message" => "Cập nhật thành công"]
+        : ["success" => false, "message" => "Lỗi update"];
+}
 }

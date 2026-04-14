@@ -1,133 +1,112 @@
-// Dữ liệu demo có chứa Icon cho từng khu vực
+// ================= CONFIG =================
+const API_URL = "/CNPM/BE/api/table.php";
 
-const db = {
-  nextId: "01",
-
-  areas: [
-    { name: "Trong nhà", icon: "🏠" },
-
-    { name: "Ban công", icon: "🌅" },
-
-    { name: "Phòng VIP", icon: "💎" },
-
-    { name: "Sân vườn", icon: "🌿" },
-  ],
+// ================= AREA ICON =================
+const areaMap = {
+  INDOOR: "🏠 Trong nhà",
+  VIP: "💎 Phòng VIP",
+  BALCONY: "🌅 Ban công",
+  GARDEN: "🌿 Sân vườn",
 };
 
-// Khởi tạo dữ liệu khi load trang
+// ================= INIT =================
+window.onload = async () => {
+  const areaSelect = document.getElementById("areaSelect");
+  const tableIdInput = document.getElementById("tableId");
 
-window.onload = () => {
-  const select = document.getElementById("areaSelect");
+  try {
+    // 🔥 1. Lấy danh sách bàn
+    const res = await fetch(API_URL);
+    const result = await res.json();
 
-  const inputId = document.getElementById("tableId");
+    if (result.success) {
+      const tables = result.data || [];
 
-  // Gán số bàn tự động từ trang cha nếu có thể
+      // 🔥 2. Tạo số bàn tiếp theo
+      const maxNumber = Math.max(
+        0,
+        ...tables.map((t) => Number(t.table_number)),
+      );
 
-  const parentNextId = window.parent?.getNextTableId?.();
+      const nextNumber = maxNumber + 1;
 
-  inputId.value = parentNextId
-    ? String(parentNextId).padStart(2, "0")
-    : db.nextId;
+      tableIdInput.value = String(nextNumber).padStart(2, "0");
+    } else {
+      tableIdInput.value = "01";
+    }
 
-  // Đổ danh sách khu vực kèm icon
+    // 🔥 3. Render khu vực (GIỮ ICON)
+    areaSelect.innerHTML =
+      '<option value="" disabled selected>👉 Chọn khu vực</option>';
 
-  db.areas.forEach((item) => {
-    let opt = document.createElement("option");
+    Object.entries(areaMap).forEach(([value, label]) => {
+      const opt = document.createElement("option");
+      opt.value = value;
+      opt.textContent = label;
+      areaSelect.appendChild(opt);
+    });
+  } catch (err) {
+    console.error("Lỗi init:", err);
+    alert("Không load được dữ liệu bàn!");
+  }
 
-    opt.value = item.name;
-
-    // Kết hợp icon và tên khu vực
-
-    opt.innerHTML = `${item.icon} ${item.name}`;
-
-    select.appendChild(opt);
-  });
-
+  // 🔥 4. Nút huỷ
   const btnCancel = document.querySelector(".btn-cancel");
-
   if (btnCancel) {
     btnCancel.onclick = () => {
-      if (window.parent?.closeAddTable) {
+      if (window.parent && window.parent.closeAddTable) {
         window.parent.closeAddTable();
-      } else {
-        window.history.back();
       }
     };
   }
 };
 
-// Xử lý nút Tạo Bàn
-
-document.getElementById("btnCreate").onclick = () => {
+// ================= CREATE =================
+document.getElementById("btnCreate").onclick = async () => {
+  const tableNumber = document.getElementById("tableId").value;
   const area = document.getElementById("areaSelect").value;
-
-  const capacity = Number(document.getElementById("capacity").value || 1);
-
+  const capacity = document.getElementById("capacity").value;
   const note = document.getElementById("note").value.trim();
 
-  const tableId = document.getElementById("tableId").value;
-
   if (!area) {
-    alert("Bạn chưa chọn khu vực kìa!");
-
+    alert("Chọn khu vực đi 😑");
     return;
   }
 
-  if (capacity < 1) {
-    alert("Sức chứa phải lớn hơn 0");
-
-    return;
-  }
-
-  const newTable = {
-    id: Number(tableId),
-
-    name: `Bàn ${String(tableId).padStart(2, "0")}`,
-
-    area,
-
-    capacity,
-
-    status: "Trống",
-
-    customers: 0,
-
-    items: 0,
-
-    note,
+  const tableData = {
+    table_number: parseInt(tableNumber),
+    area: area,
+    capacity: parseInt(capacity),
+    note: note,
   };
 
   try {
-    if (window.parent?.handleNewTable) {
-      window.parent.handleNewTable(newTable);
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(tableData),
+    });
 
-      alert(`Đã lưu Bàn ${tableId} tại khu vực ${area}`);
+    const result = await res.json();
 
-      return;
+    if (result.success) {
+      alert(`✅ Tạo Bàn ${tableNumber} thành công`);
+
+      // 🔥 gọi lại Table.js
+      if (window.parent && window.parent.initTable) {
+        window.parent.initTable(); // load lại chuẩn
+      }
+
+      if (window.parent && window.parent.closeAddTable) {
+        window.parent.closeAddTable();
+      }
+    } else {
+      alert("❌ " + result.message);
     }
-
-    const raw = localStorage.getItem("tables");
-
-    const savedTables = raw ? JSON.parse(raw) : [];
-
-    if (savedTables.some((t) => t.id === newTable.id)) {
-      alert("Số bàn đã tồn tại. Vui lòng cập nhật ID");
-
-      return;
-    }
-
-    savedTables.push(newTable);
-
-    localStorage.setItem("tables", JSON.stringify(savedTables));
-
-    alert(`Đã lưu Bàn ${tableId} tại khu vực ${area}`);
-
-    setTimeout(() => {
-      window.location.href = "../Table.html";
-    }, 400);
   } catch (err) {
     console.error(err);
-
-    alert("Lỗi lưu bàn. Vui lòng thử lại.");
+    alert("Server lỗi!");
   }
 };
