@@ -2,11 +2,6 @@
 const API_URL = "/CNPM/BE/api/table.php";
 
 // ================= MAP =================
-const statusMap = {
-  Trống: "EMPTY",
-  "Đang dùng": "OCCUPIED",
-};
-
 const statusMapReverse = {
   EMPTY: "Trống",
   OCCUPIED: "Đang dùng",
@@ -14,7 +9,6 @@ const statusMapReverse = {
 
 // ================= STATE =================
 let tables = [];
-let currentStatus = "Tất cả";
 
 // ================= RENDER =================
 function renderTables(list) {
@@ -44,41 +38,34 @@ function renderTables(list) {
             <div class="table-sub">Sức chứa: ${table.capacity} người</div>
           </div>
         </div>
-
         <div class="status-tag ${statusClass}">
           <span class="status-dot"></span>
           ${table.status}
         </div>
-
-        <div class="extra-info ${
-          table.status !== "Đang dùng" ? "hidden-info" : ""
-        }">
-          <span><i class="fa-solid fa-users"></i> ${table.customers}</span>
-          <span><i class="fa-solid fa-utensils"></i> ${table.items}</span>
-        </div>
       </div>
 
       <div class="product-actions">
-        <button class="btn-bill">
+        <button class="btn-bill" onclick="viewTable(${table.id})">
           <i class="fa-solid fa-file-invoice-dollar"></i> Xem
         </button>
-
         <div class="action-row">
           <button class="btn-edit" onclick="editTable(${table.id})">
             <i class="fa-solid fa-pen-to-square"></i> Sửa
           </button>
-
           <button class="btn-delete" onclick="deleteTable(${table.id})">
             <i class="fa-solid fa-trash-can"></i> Xoá
           </button>
         </div>
       </div>
     `;
-
     grid.appendChild(card);
   });
 
-  // stats fallback (nếu API chưa trả)
+  // Cập nhật thống kê nhanh
+  updateStats(list);
+}
+
+function updateStats(list) {
   const totalEl = document.getElementById("totalTables");
   const occupiedEl = document.getElementById("occupiedTables");
 
@@ -93,21 +80,18 @@ function renderTables(list) {
 async function fetchTables() {
   try {
     let url = API_URL;
-    const params = [];
-
     const search = document.getElementById("searchInput")?.value?.trim();
     if (search) {
-      params.push(`search=${encodeURIComponent(search)}`);
+      url += `?search=${encodeURIComponent(search)}`;
     }
-
-    if (params.length) url += "?" + params.join("&");
 
     const res = await fetch(url);
     const data = await res.json();
 
     if (data.success) {
+      // Lưu vào biến global tables để dùng cho Xem/Sửa
       tables = data.data.map((t) => ({
-        id: t.table_id,
+        id: t.table_id, // Quan trọng: kiểm tra field này từ API
         name: `Bàn ${String(t.table_number).padStart(2, "0")}`,
         area: t.area,
         capacity: t.capacity,
@@ -118,7 +102,6 @@ async function fetchTables() {
 
       renderTables(tables);
 
-      // update stats từ BE
       if (data.stats) {
         document.getElementById("totalTables").textContent = data.stats.total;
         document.getElementById("occupiedTables").textContent =
@@ -130,98 +113,59 @@ async function fetchTables() {
   }
 }
 
-// ================= FILTER =================
-function applyFilters() {
-  fetchTables(); // gọi API luôn
-}
+// ================= ACTIONS =================
 
-// ================= INIT (GIỮ NGUYÊN) =================
-window.initTable = function () {
-  console.log("🔥 initTable CALLED");
+// XEM BÀN
+window.viewTable = (id) => {
+  // Ép kiểu Number để so sánh chính xác
+  const table = tables.find((t) => Number(t.id) === Number(id));
 
-  currentStatus = "Tất cả";
-
-  const searchInput = document.getElementById("searchInput");
-  if (searchInput) searchInput.value = "";
-
-  fetchTables();
-};
-
-// ================= PATH (GIỮ NGUYÊN) =================
-const TABLE_BASE_PATH = (() => {
-  const currentScript = document.currentScript;
-
-  if (currentScript && currentScript.src) {
-    const scriptUrl = new URL(currentScript.src, window.location.href);
-    return scriptUrl.href.replace(/\/Table\.js$/, "/");
+  if (!table) {
+    console.error("Danh sách hiện tại:", tables);
+    alert("Không tìm thấy dữ liệu bàn!");
+    return;
   }
 
-  const path = window.location.pathname;
-  const lastSlashIndex = path.lastIndexOf("/");
+  alert(
+    `🪑 ${table.name}\n` +
+      `----------------\n` +
+      `📍 Khu vực: ${table.area}\n` +
+      `👥 Sức chứa: ${table.capacity} người\n` +
+      `📌 Trạng thái: ${table.status}\n` +
+      `🍽 Khách hiện tại: ${table.customers}\n` +
+      `🍴 Món đã gọi: ${table.items}`,
+  );
+};
 
-  if (lastSlashIndex !== -1) {
-    return `${window.location.origin}${path.slice(0, lastSlashIndex + 1)}`;
+// SỬA BÀN
+window.editTable = (id) => {
+  const table = tables.find((t) => Number(t.id) === Number(id));
+  if (!table) {
+    alert("Không tìm thấy bàn để sửa!");
+    return;
   }
 
-  return `${window.location.origin}/FE/TABLE/`;
-})();
+  const newArea = prompt("Nhập khu vực mới:", table.area);
+  if (newArea === null) return;
 
-// ================= ADD TABLE (GIỮ UI) =================
-window.openAddTable = () => {
-  const wrapper = document.getElementById("addTableWrapper");
-  const content = document.getElementById("addTableContent");
+  const newCapacity = prompt("Nhập sức chứa mới:", table.capacity);
+  if (newCapacity === null) return;
 
-  if (!wrapper || !content) return;
-
-  const addPage = new URL("AddTable/AddTable.html", TABLE_BASE_PATH).href;
-
-  content.innerHTML = `<iframe src="${addPage}" frameborder="0"></iframe>`;
-
-  wrapper.style.display = "flex";
-  document.body.style.overflow = "hidden";
-};
-
-window.closeAddTable = () => {
-  const wrapper = document.getElementById("addTableWrapper");
-  if (!wrapper) return;
-
-  wrapper.style.display = "none";
-  document.getElementById("addTableContent").innerHTML = "";
-  document.body.style.overflow = "auto";
-};
-
-window.addTable = () => window.openAddTable();
-
-// ================= HANDLE ADD =================
-window.handleNewTable = async (newTable) => {
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        table_number: newTable.table_number,
-        area: newTable.area,
-        capacity: newTable.capacity,
-        note: newTable.note,
-      }),
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      fetchTables();
-      window.closeAddTable();
-    } else {
-      alert(data.message);
-    }
-  } catch (err) {
-    console.error(err);
+  if (isNaN(newCapacity) || newCapacity < 1) {
+    alert("Sức chứa phải là số dương!");
+    return;
   }
+
+  // Demo: Cập nhật trực tiếp vào mảng và render lại
+  table.area = newArea;
+  table.capacity = parseInt(newCapacity);
+  renderTables(tables);
+
+  alert("Cập nhật tạm thời thành công!");
+  // Sau này bạn có thể gọi API UPDATE ở đây
 };
 
-// ================= DELETE =================
+// XOÁ BÀN
 window.deleteTable = async (id) => {
   if (!confirm("Bạn có chắc muốn xóa bàn này?")) return;
 
@@ -229,87 +173,71 @@ window.deleteTable = async (id) => {
     const res = await fetch(`${API_URL}?id=${id}`, {
       method: "DELETE",
     });
-
     const data = await res.json();
 
     if (data.success) {
-      fetchTables();
+      fetchTables(); // Load lại danh sách từ server
     } else {
-      alert(data.message);
+      alert(data.message || "Xoá thất bại");
     }
   } catch (err) {
-    console.error(err);
+    console.error("Lỗi xóa:", err);
   }
 };
 
-// ================= EDIT =================
-window.editTable = async (id) => {
-  const table = tables.find((t) => t.id === id);
-  if (!table) return;
+// ================= KHỞI TẠO =================
+window.initTable = function () {
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) searchInput.value = "";
+  fetchTables();
+};
 
-  const newArea = prompt("Cập nhật khu vực", table.area);
-  if (newArea === null) return;
-
-  const newCapacity = Number(prompt("Sức chứa", table.capacity));
-
-  if (!newCapacity || newCapacity < 1) {
-    alert("Sức chứa không hợp lệ");
-    return;
+// Logic xử lý Modal Thêm bàn (Giữ nguyên của bạn)
+const TABLE_BASE_PATH = (() => {
+  const currentScript = document.currentScript;
+  if (currentScript?.src) {
+    return new URL(currentScript.src, window.location.href).href.replace(
+      /\/Table\.js$/,
+      "/",
+    );
   }
+  return window.location.origin + "/FE/TABLE/";
+})();
 
+window.openAddTable = () => {
+  const wrapper = document.getElementById("addTableWrapper");
+  const content = document.getElementById("addTableContent");
+  if (!wrapper || !content) return;
+
+  const addPage = new URL("AddTable/AddTable.html", TABLE_BASE_PATH).href;
+  content.innerHTML = `<iframe src="${addPage}" frameborder="0" style="width:100%; height:400px;"></iframe>`;
+  wrapper.style.display = "flex";
+  document.body.style.overflow = "hidden";
+};
+
+window.closeAddTable = () => {
+  const wrapper = document.getElementById("addTableWrapper");
+  if (wrapper) wrapper.style.display = "none";
+  document.body.style.overflow = "auto";
+};
+
+window.addTable = () => window.openAddTable();
+
+window.handleNewTable = async (newTable) => {
   try {
-    const res = await fetch(`${API_URL}?id=${id}`, {
-      method: "PUT",
+    const res = await fetch(API_URL, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        table_number: table.name.replace("Bàn ", ""),
-        area: newArea,
-        capacity: newCapacity,
-        status: statusMap[table.status],
-      }),
+      body: JSON.stringify(newTable),
     });
-
     const data = await res.json();
-
     if (data.success) {
       fetchTables();
+      window.closeAddTable();
     } else {
       alert(data.message);
     }
   } catch (err) {
-    console.error(err);
+    console.error("Lỗi thêm bàn:", err);
   }
 };
-
-async function updateTableById(id, data) {
-  try {
-    const res = await fetch(`${API_URL}?id=${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        table_number: data.table_number,
-        area: data.area,
-        capacity: data.capacity,
-        note: data.note || "",
-        status: data.status, // "EMPTY" | "OCCUPIED"
-      }),
-    });
-
-    const result = await res.json();
-
-    if (result.success) {
-      console.log("✅ Update thành công");
-      fetchTables(); // reload lại UI
-    } else {
-      console.error("❌", result.message);
-    }
-  } catch (err) {
-    console.error("Lỗi update:", err);
-  }
-}
-
-// ================= UI =================
-
-window.filterTables = () => fetchTables();

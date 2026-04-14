@@ -98,23 +98,49 @@ function renderOrders() {
 }
 
 // ================= VIEW DETAIL =================
+// ================= VIEW DETAIL =================
 async function viewOrder(id) {
   try {
     const res = await fetch(`/CNPM/BE/api/order.php?id=${id}`);
     const data = await res.json();
 
-    if (!data.success) return alert("Không lấy được chi tiết");
+    if (!data.success) return alert("Không lấy được chi tiết đơn hàng");
 
-    let content = data.items
+    // Lấy thông tin cơ bản từ mảng orders hiện tại (tránh gọi API nhiều lần)
+    const orderInfo = orders.find((o) => Number(o.id) === Number(id));
+
+    // Xử lý danh sách món ăn
+    let itemList = data.items
       .map(
-        (i) =>
-          `${i.name} x${i.quantity} - ${Number(i.price).toLocaleString()}đ`,
+        (i, index) =>
+          `${index + 1}. ${i.name}\n   ${i.quantity} x ${Number(i.price).toLocaleString()}đ = ${(i.quantity * i.price).toLocaleString()}đ`,
       )
-      .join("\n");
+      .join("\n--------------------------\n");
 
-    alert("Chi tiết đơn:\n\n" + content);
+    // Tính tổng số lượng món
+    const totalQty = data.items.reduce((sum, i) => sum + Number(i.quantity), 0);
+
+    // Tạo nội dung hiển thị
+    const billContent = `
+🧾 CHI TIẾT ĐƠN HÀNG ${orderInfo ? orderInfo.code : ""}
+------------------------------------------
+👤 Khách hàng: ${orderInfo ? orderInfo.customer : "N/A"}
+🪑 Bàn số: ${orderInfo ? orderInfo.table : "N/A"}
+------------------------------------------
+DANH SÁCH MÓN:
+${itemList}
+
+------------------------------------------
+📦 Tổng số lượng: ${totalQty} món
+💰 TỔNG CỘNG: ${orderInfo ? orderInfo.total : "0đ"}
+------------------------------------------
+📌 Trạng thái: ${orderInfo ? orderInfo.statusText : ""}
+    `;
+
+    alert(billContent);
   } catch (err) {
-    console.error(err);
+    console.error("Lỗi khi xem chi tiết:", err);
+    alert("Có lỗi xảy ra khi tải dữ liệu.");
   }
 }
 
@@ -207,4 +233,8 @@ window.addOrder = function () {
 };
 
 // ================= INIT =================
-fetchOrders();
+window.initOrder = function () {
+  console.log("🔥 Init Order Page");
+
+  fetchOrders();
+};

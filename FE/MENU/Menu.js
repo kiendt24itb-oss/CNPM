@@ -1,5 +1,6 @@
 ﻿// ===== CONFIG =====
 const API_URL = "../../BE/api/menu.php";
+let productStore = [];
 
 // ===== UTIL =====
 function formatPrice(price) {
@@ -11,6 +12,7 @@ function formatPrice(price) {
 // ===== RENDER =====
 // Thay vì dùng biến 'products' fix cứng, ta sẽ dùng dữ liệu từ API
 function renderProducts(productList) {
+  productStore = productList; // 👈 thêm dòng này
   const grid = document.getElementById("productGrid");
   if (!grid) return;
 
@@ -178,23 +180,76 @@ document.addEventListener("click", async (e) => {
     document.getElementById("dropdownMenu")?.classList.remove("show");
   }
 
-  const id = e.target.dataset.id;
-  if (!id) return;
+  const viewBtn = e.target.closest(".btn-view");
+  const editBtn = e.target.closest(".btn-edit");
+  const deleteBtn = e.target.closest(".btn-delete");
 
-  if (e.target.classList.contains("btn-delete")) {
+  // ===== VIEW =====
+  if (viewBtn) {
+    const id = viewBtn.dataset.id;
+
+    const product = productStore.find((p) => p.menu_id == id);
+
+    if (product) {
+      alert(`Tên: ${product.name}\nGiá: ${formatPrice(product.price)}`);
+    } else {
+      alert("Không tìm thấy sản phẩm");
+    }
+    return;
+  }
+
+  // ===== EDIT =====
+  if (editBtn) {
+    const id = editBtn.dataset.id;
+
+    const product = productStore.find((p) => p.menu_id == id);
+
+    if (!product) {
+      alert("Không tìm thấy sản phẩm");
+      return;
+    }
+
+    const newName = prompt("Nhập tên mới:", product.name);
+    if (newName === null) return;
+
+    const newPrice = prompt("Nhập giá mới:", product.price);
+    if (newPrice === null) return;
+
+    // update tạm UI (frontend)
+    product.name = newName;
+    product.price = parseFloat(newPrice);
+
+    alert("Cập nhật thành công (demo frontend)");
+
+    renderProducts(productStore);
+    return;
+  }
+
+  // ===== DELETE =====
+  if (deleteBtn) {
+    const id = deleteBtn.dataset.id;
+
     if (confirm("Bạn có chắc chắn muốn xoá món này?")) {
       try {
-        const res = await fetch(`${API_URL}?id=${id}`, { method: "DELETE" });
+        const res = await fetch(`${API_URL}?id=${id}`, {
+          method: "DELETE",
+        });
         const result = await res.json();
+
         alert(result.message);
+
         if (result.success) fetchProducts();
       } catch (err) {
         alert("Lỗi khi xoá");
       }
     }
   }
-  // Các nút Xem/Sửa bạn có thể viết tiếp logic mở Modal tương tự
 });
 
 // Chạy init
-initMenu();
+window.initMenu = function () {
+  console.log("🔥 initMenu");
+
+  loadCategories();
+  fetchProducts();
+};

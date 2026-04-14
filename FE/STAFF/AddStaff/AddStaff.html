@@ -4,12 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cửa sổ Nhân Viên</title>
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <link rel="stylesheet" href="AddStaff.css" />
   </head>
+
   <body>
     <div class="modal-card">
       <div class="header">Thêm Thông Tin Nhân Viên Mới</div>
@@ -26,9 +28,11 @@
               <div class="field" style="flex: 1">
                 <label>Mã Nhân Viên:</label>
                 <div class="locked-info">
-                  <span>NV-10</span><i class="fa-solid fa-lock"></i>
+                  <span id="staffCode">NV-10</span>
+                  <i class="fa-solid fa-lock"></i>
                 </div>
               </div>
+
               <div class="field" style="flex: 2">
                 <label>Email:</label>
                 <input
@@ -46,21 +50,26 @@
               <label>Tên Nhân Viên:</label>
               <input
                 type="text"
+                id="name"
                 placeholder="Nhập tên..."
                 value="Nguyễn Văn A"
               />
             </div>
+
             <div class="field">
               <label>Số CCCD/CMND:</label>
               <input
                 type="text"
+                id="cccd"
                 placeholder="Nhập số..."
                 value="0400 1234 5678"
               />
             </div>
+
             <div class="field">
               <label>Chức vụ:</label>
               <select
+                id="roleSelect"
                 style="
                   appearance: none;
                   background: url(&quot;data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22%237D4111%22><path d=%22M7 10l5 5 5-5z%22/></svg>&quot;)
@@ -75,20 +84,29 @@
 
             <div class="field">
               <label>Ngày Sinh:</label>
-              <input type="date" value="1998-05-20" />
+              <input type="date" id="birth_date" value="1998-05-20" />
             </div>
+
             <div class="field">
               <label>Ngày Vào Làm:</label>
-              <input type="date" value="2024-01-15" />
+              <input type="date" id="hire_date" value="2024-01-15" />
             </div>
+
             <div class="field"></div>
+
             <div class="field">
               <label>Số Điện Thoại:</label>
-              <input type="tel" placeholder="09xx..." value="0905 123 456" />
+              <input
+                type="tel"
+                id="phone"
+                placeholder="09xx..."
+                value="0905 123 456"
+              />
             </div>
+
             <div class="field span-2">
               <label>Địa Chỉ:</label>
-              <textarea placeholder="Nhập địa chỉ tạm trú...">
+              <textarea id="address" placeholder="Nhập địa chỉ tạm trú...">
 Số 456, đường Cà Phê Rang, Đà Nẵng</textarea
               >
             </div>
@@ -98,6 +116,7 @@ Số 456, đường Cà Phê Rang, Đà Nẵng</textarea
             <button type="submit" class="btn btn-save">
               <i class="fa-solid fa-floppy-disk"></i> LƯU THÔNG TIN
             </button>
+
             <button
               type="button"
               class="btn btn-cancel"
@@ -109,5 +128,8 @@ Số 456, đường Cà Phê Rang, Đà Nẵng</textarea
         </form>
       </div>
     </div>
+
+    <!-- JS -->
+    <script src="AddStaff.js"></script>
   </body>
 </html>
