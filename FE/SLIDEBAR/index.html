@@ -13,7 +13,6 @@
   </head>
 
   <body>
-    <!-- SIDEBAR -->
     <div class="sidebar">
       <div class="logo">
         <span>☕</span>
@@ -52,19 +51,13 @@
       <div class="menu-section">
         <div class="menu-title">HỆ THỐNG</div>
 
-        <div class="menu-item" data-page="../pages/report.html">
-          <span>📈</span><span>Báo cáo</span>
-        </div>
-
-        <div class="menu-item" data-page="../pages/settings.html">
-          <span>⚙️</span><span>Cài đặt</span>
+        <div class="menu-item logout-item" onclick="handleLogout()">
+          <span>🚪</span><span>Thoát</span>
         </div>
       </div>
     </div>
 
-    <!-- MAIN -->
     <div class="main-content">
-      <!-- HEADER -->
       <div class="header">
         <div>
           <h2>Chào mừng trở lại, Admin!</h2>
@@ -73,30 +66,29 @@
           </p>
         </div>
 
-        <!-- USER -->
-        <div class="user-dropdown">
-          <div class="user-info">
+        <div class="user-display">
+          <div class="user-info-static">
             <div class="avatar">A</div>
             <div>
               <div style="font-weight: 600">Quản trị viên</div>
-              <div style="font-size: 12px; color: var(--text-light)">▼</div>
+              <div style="font-size: 12px; color: var(--text-light)">
+                Trực tuyến
+              </div>
             </div>
-          </div>
-
-          <div class="dropdown-menu">
-            <div class="dropdown-item">👤 Hồ sơ</div>
-            <div class="dropdown-item">🔐 Đổi mật khẩu</div>
-            <div class="dropdown-item">🚪 Đăng xuất</div>
           </div>
         </div>
       </div>
 
-      <!-- CONTENT LOAD -->
-      <div id="content">
-        <!-- Nội dung sẽ load vào đây -->
-      </div>
+      <div id="content"></div>
     </div>
 
     <script src="index.js"></script>
+    <script>
+      function handleLogout() {
+        if (confirm("Bạn có chắc chắn muốn đăng xuất?")) {
+          window.location.href = "login.html"; // Thay đường dẫn trang đăng nhập của bạn vào đây
+        }
+      }
+    </script>
   </body>
 </html>

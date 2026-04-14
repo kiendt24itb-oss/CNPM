@@ -1,133 +1,159 @@
 :root {
-  --coffee-bold: #3e2723;
-  --coffee-primary: #5d4037;
-  --coffee-light-bg: #efebe9; /* Màu nền cho hàng tiêu đề */
-  --white: #ffffff;
+  --staff-coffee: #5d4037;
+  --staff-coffee-light: #f2e1d1;
+  --staff-border: #eee;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: "Segoe UI", Tahoma, sans-serif;
-  color: var(--coffee-bold); /* Tất cả chữ mặc định màu cà phê */
+#staff-section-wrapper {
+  height: 100vh; /* Full màn hình */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-body {
-  background-color: #fdfaf9;
-  padding-top: 100px; /* Khoảng cách cho Header chính */
-}
-
-/* Header chính (Chứa Search & Dropdown) */
-header {
-  position: fixed;
-  top: 70px;
-  left: 260px;
-  right: 0;
-  height: 80px;
-  background-color: var(--white);
+/* 1. HEADER CỐ ĐỊNH (Thanh tìm kiếm và nút bấm) */
+.staff-sticky-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 4%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  z-index: 1100;
-}
-
-.header-left {
-  display: flex;
   gap: 15px;
+  padding: 12px 20px;
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+
+  position: fixed;
+  top: 70px; /* nằm dưới header chính */
+  left: 260px; /* 👈 bằng width sidebar */
+  right: 0;
+
+  z-index: 999;
 }
 
-.search-bar {
-  width: 300px;
+.staff-search-container {
   position: relative;
+  width: 350px;
 }
-.search-bar i {
+
+.staff-search-container i {
   position: absolute;
   left: 15px;
   top: 50%;
   transform: translateY(-50%);
+  color: #ccc;
 }
-.search-bar input,
-.filter-dropdown {
+
+.staff-search-container input {
   width: 100%;
-  padding: 10px 15px 10px 40px;
-  border-radius: 8px;
+  padding: 10px 15px 10px 45px;
   border: 1px solid #ddd;
+  border-radius: 8px;
   outline: none;
+  transition: all 0.3s ease;
+}
+
+/* Viền màu cà phê khi focus */
+.staff-search-container input:focus {
+  border-color: var(--staff-coffee);
+  box-shadow: 0 0 0 3px rgba(93, 64, 55, 0.1);
+}
+
+.staff-btn-add {
+  padding: 10px 20px;
+  border: 2px solid var(--staff-coffee);
+  background: transparent;
+  color: var(--staff-coffee);
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
   transition: 0.3s;
 }
-.filter-dropdown {
-  padding: 10px 15px;
-  width: 180px;
-  background: white;
-  cursor: pointer;
+
+.staff-btn-add:hover {
+  background: var(--staff-coffee);
+  color: #fff;
 }
 
-/* Hiệu ứng viền nâu khi click */
-.search-bar input:focus,
-.filter-dropdown:focus {
-  border-color: var(--coffee-bold);
-  box-shadow: 0 0 0 3px rgba(62, 39, 35, 0.1);
+/* 2. VÙNG NỘI DUNG CUỘN (BẢNG) */
+.staff-table-content {
+  flex-grow: 1;
+  overflow-y: auto; /* Tạo thanh cuộn riêng cho bảng */
+  position: relative; /* Quan trọng để sticky header hoạt động */
+  padding-top: 40px;
+  top: 0px; /* Đẩy nội dung xuống dưới để tránh bị header đè lên */
 }
 
-.btn-add {
-  background-color: var(--coffee-bold);
-  color: var(--white);
-  padding: 11px 22px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-/* CONTAINER BẢNG */
-.table-wrapper {
-  width: 94%;
-  max-height: 500px; /* Giới hạn chiều cao để thấy hiệu ứng cuộn */
-  margin: 0 auto;
-  background: var(--white);
-  border-radius: 12px;
-  overflow-y: auto; /* Cho phép cuộn dọc trong bảng */
-  border: 1px solid #eee;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-table {
+.staff-main-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 800px;
+  border: 1px solid var(--staff-coffee)
 }
 
-/* CSS QUAN TRỌNG: CỐ ĐỊNH HÀNG TIÊU ĐỀ */
-thead th {
+/* 3. CỐ ĐỊNH TIÊU ĐỀ BẢNG (Màu kem) */
+.staff-main-table thead th {
   position: sticky;
-  top: 0; /* Dính sát mép trên của table-wrapper */
-  background-color: var(--coffee-light-bg); /* Đổ màu nền cho hàng tiêu đề */
+  top: 0; /* Nó sẽ dính vào đỉnh của container .staff-table-content */
   z-index: 100;
-  padding: 20px 15px;
+  background-color: var(--staff-coffee-light);
+
+  /* Giữ nguyên padding và text-align để khớp với cột bên dưới */
+  padding: 12px 15px;
   text-align: left;
-  font-size: 15px;
-  font-weight: 800; /* Chữ đậm hơn */
-  border-bottom: 2px solid #d7ccc8;
+
+  /* Đường viền dưới của header */
+  border-bottom: 2px solid var(--staff-coffee);
+  /* Đường viền đứng giữa các cột tiêu đề (nếu muốn) */
+  border-right: 1px solid rgba(93, 64, 55, 0.2); 
+  color: var(--staff-coffee);
+
+  /* QUAN TRỌNG: KHÔNG dùng display: flex hay position: fixed ở đây */
+}
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* Quan trọng: Ngăn cuộn toàn trang */
 }
 
-td {
-  padding: 18px 15px;
-  border-bottom: 1px solid #f5f5f5;
-  font-size: 14.5px;
+.staff-main-table tbody td {
+  padding: 14px 15px;
+  border-bottom: 1px solid #f9f9f9;
+  font-size: 14px;
+  color: #444;
+
+  /* Đổi từ màu #f9f9f9 sang màu cà phê nhạt */
+  border-bottom: 1px solid rgba(93, 64, 55, 0.15); 
+  /* Đường viền đứng giữa các cột */
+  border-right: 1px solid rgba(93, 64, 55, 0.1);
 }
 
-.emp-img {
-  width: 45px;
-  height: 45px;
-  border-radius: 8px;
-  object-fit: cover;
+.staff-main-table tbody td:last-child,
+.staff-main-table thead th:last-child {
+  border-right: none;
 }
 
-.actions i {
-  margin-right: 15px;
+.staff-main-table tbody tr:hover {
+  background-color: rgba(93, 64, 55, 0.03);
+}
+
+.staff-actions {
+  display: flex;
+  gap: 15px;
+  color: #a1887f;
+}
+
+.staff-actions i {
   cursor: pointer;
-  font-size: 18px;
-  color: var(--coffee-primary);
+}
+
+.staff-actions i:hover {
+  color: var(--staff-coffee);
+}
+
+/* Thanh cuộn đẹp */
+.staff-table-content::-webkit-scrollbar {
+  width: 6px;
+}
+.staff-table-content::-webkit-scrollbar-thumb {
+  background: #ddd;
+  border-radius: 10px;
 }

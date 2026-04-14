@@ -1,145 +1,135 @@
--- =====================================================
--- DATABASE: QUẢN LÝ QUÁN CAFE
--- =====================================================
-DROP DATABASE IF EXISTS coffee_management;
 CREATE DATABASE coffee_management
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
 USE coffee_management;
 
--- =====================================================
--- 1. STAFF (NHÂN VIÊN)
--- =====================================================
+-- ================= NHÂN VIÊN =================
 CREATE TABLE staff (
     staff_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
-    cccd VARCHAR(20) UNIQUE, -- Căn cước công dân (Duy nhất)
-    email VARCHAR(150) UNIQUE NOT NULL, 
     birth_date DATE,
-    hire_date DATE DEFAULT (CURRENT_DATE),
-    role VARCHAR(100) -- Chức vụ (Ví dụ: Pha chế, Phục vụ, Quản lý)
+    cccd VARCHAR(20) UNIQUE,
+    phone VARCHAR(20),
+    address VARCHAR(255),
+    image VARCHAR(255),
+    role ENUM('MANAGER','BARISTA','STAFF') DEFAULT 'STAFF',
+    hire_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- =====================================================
--- 2. USERS (TÀI KHOẢN ĐĂNG NHẬP)
--- =====================================================
+-- ================= USERS (LOGIN) =================
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(100) UNIQUE NOT NULL,
+    username VARCHAR(100) UNIQUE NULL,
+    email VARCHAR(150) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    email VARCHAR(150) UNIQUE NOT NULL, -- Liên kết với Email của Staff
-    role ENUM('ADMIN', 'STAFF') DEFAULT 'STAFF',
+    staff_id INT NULL,
+    role ENUM('ADMIN','STAFF') DEFAULT 'STAFF',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    -- Khóa ngoại liên kết tài khoản với thông tin nhân viên qua Email
-    FOREIGN KEY (email) REFERENCES staff(email) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (staff_id) REFERENCES staff(staff_id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
 );
 
--- =====================================================
--- 3. TABLES (BÀN)
--- =====================================================
+-- ================= BÀN =================
 CREATE TABLE tables (
     table_id INT AUTO_INCREMENT PRIMARY KEY,
-    table_number INT NOT NULL,
-    area ENUM('INDOOR','VIP','BALCONY','GARDEN'), -- Khu vực
-    capacity INT, -- Sức chứa (số người)
-    status ENUM('EMPTY','OCCUPIED') DEFAULT 'EMPTY', -- Trạng thái bàn
-    note VARCHAR(255)
+    table_number INT UNIQUE NOT NULL,
+    area ENUM('INDOOR','VIP','BALCONY','GARDEN'),
+    capacity INT,
+    status ENUM('EMPTY','OCCUPIED') DEFAULT 'EMPTY',
+    note VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- =====================================================
--- 4. CATEGORY (DANH MỤC MÓN ĂN/UỐNG)
--- =====================================================
+-- ================= DANH MỤC =================
 CREATE TABLE categories (
     category_id INT AUTO_INCREMENT PRIMARY KEY,
-    category_name VARCHAR(100) NOT NULL -- Tên danh mục (Ví dụ: Cà phê, Trà, Bánh)
+    category_name VARCHAR(100) NOT NULL
 );
 
--- =====================================================
--- 5. INGREDIENTS (NGUYÊN LIỆU)
--- =====================================================
+-- ================= NGUYÊN LIỆU =================
 CREATE TABLE ingredients (
     ingredient_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
-    stock_quantity DECIMAL(10,2) DEFAULT 0, -- Số lượng tồn kho
-    unit VARCHAR(20), -- Đơn vị tính (g, ml, kg)
-    supplier VARCHAR(150), -- Nhà cung cấp
-    min_stock DECIMAL(10,2) DEFAULT 10 -- Mức tồn tối thiểu để cảnh báo
+    supplier VARCHAR(150),
+    unit VARCHAR(20),
+    stock_quantity DECIMAL(10,2) DEFAULT 0,
+    min_stock DECIMAL(10,2) DEFAULT 10,
+    status ENUM('GOOD','LOW','OUT') DEFAULT 'GOOD'
 );
 
--- =====================================================
--- 6. RECIPES (CÔNG THỨC PHA CHẾ)
--- =====================================================
+-- ================= CÔNG THỨC =================
 CREATE TABLE recipes (
     recipe_id INT AUTO_INCREMENT PRIMARY KEY,
     recipe_name VARCHAR(150) NOT NULL,
-    note VARCHAR(255) -- Ghi chú cách làm
+    note VARCHAR(255)
 );
 
--- =====================================================
--- 7. RECIPE DETAILS (CHI TIẾT ĐỊNH MỨC NGUYÊN LIỆU)
--- =====================================================
 CREATE TABLE recipe_details (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    recipe_id INT NOT NULL,
-    ingredient_id INT NOT NULL,
-    quantity DECIMAL(10,2) NOT NULL, -- Lượng nguyên liệu tiêu hao
-    unit VARCHAR(20),
+    recipe_id INT,
+    ingredient_id INT,
+    quantity DECIMAL(10,2),
 
     FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id) ON DELETE CASCADE,
     FOREIGN KEY (ingredient_id) REFERENCES ingredients(ingredient_id) ON DELETE CASCADE
 );
 
--- =====================================================
--- 8. MENU (THỰC ĐƠN)
--- =====================================================
+-- ================= MENU =================
 CREATE TABLE menu (
     menu_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     price DECIMAL(10,2) NOT NULL,
-    description TEXT,
     image VARCHAR(255),
-    category_id INT,
-    recipe_id INT,
+    description TEXT,
+    category_id INT NULL,
+    recipe_id INT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE SET NULL,
     FOREIGN KEY (recipe_id) REFERENCES recipes(recipe_id) ON DELETE SET NULL
 );
 
--- =====================================================
--- 9. ORDERS (HÓA ĐƠN)
--- =====================================================
+-- ================= ORDERS =================
 CREATE TABLE orders (
     order_id INT AUTO_INCREMENT PRIMARY KEY,
-    table_id INT,
+    table_id INT NULL,
     customer_name VARCHAR(150),
     customer_count INT,
-    status ENUM('UNPAID','PAID') DEFAULT 'UNPAID', -- Trạng thái thanh toán
+    total DECIMAL(10,2) DEFAULT 0,
+    status ENUM('UNPAID','PAID') DEFAULT 'UNPAID',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     paid_at TIMESTAMP NULL,
 
-    FOREIGN KEY (table_id) REFERENCES tables(table_id) ON DELETE SET NULL
+    FOREIGN KEY (table_id) REFERENCES tables(table_id)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
 );
 
--- =====================================================
--- 10. ORDER ITEMS (CHI TIẾT MÓN TRONG HÓA ĐƠN)
--- =====================================================
+-- ================= ORDER ITEMS =================
 CREATE TABLE order_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT NOT NULL,
-    menu_id INT NOT NULL,
-    quantity INT NOT NULL,
+    order_id INT,
+    menu_id INT,
+    quantity INT,
+    price DECIMAL(10,2),
 
-    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
-    FOREIGN KEY (menu_id) REFERENCES menu(menu_id) ON DELETE CASCADE
+    FOREIGN KEY (order_id) REFERENCES orders(order_id)
+    ON DELETE CASCADE,
+    FOREIGN KEY (menu_id) REFERENCES menu(menu_id)
+    ON DELETE CASCADE
 );
 
--- =====================================================
--- TRIGGER: TẠO ORDER → ĐỔI TRẠNG THÁI BÀN SANG 'CÓ KHÁCH'
--- =====================================================
+-- ======================================================
+-- TRIGGERS AN TOÀN
+-- ======================================================
+
 DELIMITER //
 
+-- Khi tạo order → bàn thành OCCUPIED
 CREATE TRIGGER trg_after_insert_order
 AFTER INSERT ON orders
 FOR EACH ROW
@@ -149,47 +139,19 @@ BEGIN
         SET status = 'OCCUPIED'
         WHERE table_id = NEW.table_id;
     END IF;
-END //
+END//
 
-DELIMITER ;
-
--- =====================================================
--- TRIGGER: THANH TOÁN → TRỪ KHO NGUYÊN LIỆU
--- =====================================================
-DELIMITER //
-
-CREATE TRIGGER trg_after_update_order
-AFTER UPDATE ON orders
+-- Khi thanh toán → set paid_at
+CREATE TRIGGER trg_before_update_order
+BEFORE UPDATE ON orders
 FOR EACH ROW
 BEGIN
-    -- Khi trạng thái chuyển từ UNPAID sang PAID
     IF NEW.status = 'PAID' AND OLD.status = 'UNPAID' THEN
-
-        -- Cập nhật trừ tồn kho dựa trên công thức món
-        UPDATE ingredients i
-        JOIN recipe_details rd ON i.ingredient_id = rd.ingredient_id
-        JOIN menu m ON rd.recipe_id = m.recipe_id
-        JOIN order_items oi ON oi.menu_id = m.menu_id
-        SET i.stock_quantity = i.stock_quantity - (oi.quantity * rd.quantity)
-        WHERE oi.order_id = NEW.order_id;
-
-        -- Ghi nhận thời điểm thanh toán (Cập nhật trực tiếp vào bản ghi vừa update)
-        -- Lưu ý: Trong thực tế nên dùng SET NEW.paid_at nếu là BEFORE UPDATE, 
-        -- nhưng với AFTER UPDATE ta thực hiện lệnh UPDATE bổ sung.
-        UPDATE orders
-        SET paid_at = CURRENT_TIMESTAMP
-        WHERE order_id = NEW.order_id;
-
+        SET NEW.paid_at = CURRENT_TIMESTAMP;
     END IF;
-END //
+END//
 
-DELIMITER ;
-
--- =====================================================
--- TRIGGER: XOÁ ORDER → TRẢ BÀN VỀ TRẠNG THÁI 'TRỐNG'
--- =====================================================
-DELIMITER //
-
+-- Khi xóa order → bàn trống lại
 CREATE TRIGGER trg_after_delete_order
 AFTER DELETE ON orders
 FOR EACH ROW
@@ -199,6 +161,22 @@ BEGIN
         SET status = 'EMPTY'
         WHERE table_id = OLD.table_id;
     END IF;
-END //
+END//
+
+-- Cập nhật trạng thái kho
+CREATE TRIGGER trg_update_ingredient_status
+BEFORE UPDATE ON ingredients
+FOR EACH ROW
+BEGIN
+    IF NEW.stock_quantity IS NULL OR NEW.stock_quantity <= 0 THEN
+        SET NEW.status = 'OUT';
+
+    ELSEIF NEW.stock_quantity <= NEW.min_stock THEN
+        SET NEW.status = 'LOW';
+
+    ELSE
+        SET NEW.status = 'GOOD';
+    END IF;
+END//
 
 DELIMITER ;

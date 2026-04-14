@@ -1,63 +1,13 @@
-const orders = [
-  {
-    id: "#00123",
-    customer: "Nguyễn Văn A",
-    table: 5,
-    total: "150.000đ",
-    status: "paid",
-    statusText: "Đã thanh toán",
-  },
-  {
-    id: "#00124",
-    customer: "Nguyễn Văn B",
-    table: 2,
-    total: "85.000đ",
-    status: "paid",
-    statusText: "Đã thanh toán",
-  },
-  {
-    id: "#00125",
-    customer: "Cà Phê Trà",
-    table: 6,
-    total: "120.000đ",
-    status: "unpaid",
-    statusText: "Chưa thanh toán",
-  },
-  {
-    id: "#00126",
-    customer: "Trần Thị C",
-    table: 4,
-    total: "210.000đ",
-    status: "paid",
-    statusText: "Đã thanh toán",
-  },
-  {
-    id: "#00127",
-    customer: "Lê Văn D",
-    table: 5,
-    total: "45.000đ",
-    status: "processing",
-    statusText: "Đang xử lý",
-  },
-  {
-    id: "#00128",
-    customer: "Phạm Văn E",
-    table: 1,
-    total: "60.000đ",
-    status: "unpaid",
-    statusText: "Chưa thanh toán",
-  },
-];
+// Giữ nguyên mảng để tránh lỗi khi render lần đầu, nhưng sẽ được update từ API
+let orders = [];
 
-// Cơ chế path linh hoạt khi page Order được nhúng bằng sidebar
+// --- GIỮ NGUYÊN CƠ CHẾ PATH CỦA BẠN ---
 const ORDER_BASE_PATH = (() => {
   const currentScript = document.currentScript;
   if (currentScript && currentScript.src) {
     const scriptUrl = new URL(currentScript.src, window.location.href);
     return scriptUrl.href.replace(/\/Order\.js$/, "/");
   }
-
-  // Nếu không lấy được currentScript, dùng path của window.location (trường hợp test trực tiếp)
   const path = window.location.pathname;
   const lastSlashIndex = path.lastIndexOf("/");
   if (lastSlashIndex !== -1) {
@@ -66,8 +16,33 @@ const ORDER_BASE_PATH = (() => {
   return `${window.location.origin}/FE/ORDER/`;
 })();
 
+// --- HÀM LẤY DỮ LIỆU TỪ DATABASE ---
+async function fetchOrders() {
+  try {
+    const response = await fetch("/CNPM/api/order.php");
+    const result = await response.json();
+    if (result.success) {
+      // Convert dữ liệu từ DB sang format của UI bạn đang dùng
+      orders = result.data.map((item) => ({
+        id: `#${String(item.order_id).padStart(5, "0")}`,
+        customer: item.customer_name || "Khách vãng lai",
+        table: item.table_number || "N/A",
+        total: Number(item.total).toLocaleString() + "đ",
+        status: item.status.toLowerCase(), // 'paid' hoặc 'unpaid'
+        statusText:
+          item.status === "PAID" ? "Đã thanh toán" : "Chưa thanh toán",
+      }));
+      renderOrders();
+    }
+  } catch (error) {
+    console.error("Không thể kết nối API, sử dụng dữ liệu tạm thời.");
+  }
+}
+
+// --- GIỮ NGUYÊN HÀM RENDER CỦA BẠN ---
 function renderOrders() {
   const container = document.getElementById("orderContainer");
+  if (!container) return;
   document.getElementById("total-count").innerText = orders.length;
 
   container.innerHTML = orders
@@ -101,7 +76,9 @@ function renderOrders() {
               <button class="btn-view"><i class="fa-solid fa-eye"></i> Chi tiết</button>
               <div class="action-row">
                 <button class="btn-edit"><i class="fa-solid fa-pen"></i></button>
-                <button class="btn-delete"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn-delete" onclick="deleteOrderById(${order.id.replace("#", "")})">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -110,8 +87,7 @@ function renderOrders() {
     .join("");
 }
 
-renderOrders();
-
+// --- GIỮ NGUYÊN LOGIC MỞ MODAL (IFRAME) CỦA BẠN ---
 window.openAddOrder = function () {
   const wrapper = document.getElementById("addOrderWrapper");
   const content = document.getElementById("addOrderContent");
@@ -138,21 +114,24 @@ window.closeAddOrder = function () {
     wrapper.style.display = "none";
     document.getElementById("addOrderContent").innerHTML = "";
     document.body.style.overflow = "auto";
+    fetchOrders(); // Load lại danh sách sau khi thêm đơn thành công
   }
 };
 
+// Hàm này để Iframe gọi khi ấn "Xác nhận" hoặc "Thanh toán"
 window.addOrder = function (orderData) {
-  // Tạo ID mới
-  const newId = `#00${String(orders.length + 129).padStart(3, "0")}`;
-  const newOrder = {
-    id: newId,
-    customer: orderData.customer || "Khách vãng lai",
-    table: orderData.table,
-    total: `${orderData.total.toLocaleString()}đ`,
-    status: orderData.isPaid ? "paid" : "unpaid",
-    statusText: orderData.isPaid ? "Đã thanh toán" : "Chưa thanh toán",
-  };
-  orders.push(newOrder);
-  renderOrders();
+  // Logic: Iframe sẽ gửi data lên, file này sẽ gọi fetchOrders để cập nhật lại màn hình
+  fetchOrders();
   closeAddOrder();
 };
+
+// Hàm xóa đơn thật trong DB
+async function deleteOrderById(id) {
+  if (confirm("Xóa đơn hàng này?")) {
+    await fetch(`../api/order.php?id=${id}`, { method: "DELETE" });
+    fetchOrders();
+  }
+}
+
+// Khởi chạy
+fetchOrders();

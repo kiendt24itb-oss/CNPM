@@ -149,7 +149,7 @@ body {
   padding: 16px;
   display: flex;
   flex-direction: column;
-  height: 240px;
+  height: 250px;
 }
 
 /* Phần content chiếm trên */
@@ -190,6 +190,10 @@ body {
   align-items: center;
   font-size: 13px;
   margin-top: 6px;
+
+  background: #fcfaf9;
+  border-radius: 4px;
+  padding: 6px 10px;
 }
 
 /* Ẩn nhưng vẫn giữ chỗ */
@@ -228,16 +232,6 @@ body {
 }
 .status-tag.don-dep {
   color: #f9a825;
-}
-
-.extra-info {
-  background: #fcfaf9;
-  border-radius: 4px;
-  padding: 6px 10px;
-  font-size: 12px;
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
 }
 
 /* Action Buttons - Giữ nguyên style Menu */
@@ -315,4 +309,52 @@ body {
   border: none;
   border-radius: 14px;
   background: transparent;
+}
+
+/* Status tag */
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Dot chung */
+.status-dot {
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+}
+
+/* Trống */
+.status-tag.trong {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-tag.trong .status-dot {
+  background-color: #2e7d32;
+}
+
+/* Đang dùng */
+.status-tag.dang-dung {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.status-tag.dang-dung .status-dot {
+  background-color: #c62828;
+}
+
+/* Dọn dẹp */
+.status-tag.don-dep {
+  background-color: #fff8e1;
+  color: #f9a825;
+}
+
+.status-tag.don-dep .status-dot {
+  background-color: #f9a825;
 }

@@ -1,39 +1,71 @@
 <link
   rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
 />
 <link rel="stylesheet" href="../STAFF/Staff.css" />
 
-<header>
-  <div class="header-left">
-    <div class="search-bar">
+<div id="staff-section-wrapper">
+  <header class="staff-sticky-header">
+    <div class="staff-search-container">
       <i class="fa-solid fa-magnifying-glass"></i>
-      <input type="text" placeholder="Tìm kiếm nhân viên..." />
+      <input type="text" id="staffSearch" placeholder="Tìm kiếm nhân viên..." />
     </div>
-    <select class="filter-dropdown">
-      <option value="">Tất cả chức vụ</option>
-      <option value="manager">Quản lý</option>
-      <option value="staff">Nhân viên</option>
-    </select>
-  </div>
-  <button class="btn-add">+ Thêm nhân viên</button>
-</header>
+    <button class="staff-btn-add" id="btnAddStaff">
+      + Thêm thông tin nhân viên mới
+    </button>
+  </header>
 
-<div class="table-wrapper">
-  <table>
-    <thead>
-      <tr>
-        <th>Mã NV</th>
-        <th>Hình ảnh</th>
-        <th>Tên nhân viên</th>
-        <th>Số điện thoại</th>
-        <th>Email</th>
-        <th>Chức vụ</th>
-        <th>Thao tác</th>
-      </tr>
-    </thead>
-    <tbody id="employee-list"></tbody>
-  </table>
+  <div class="staff-table-content">
+    <table class="staff-main-table">
+      <thead>
+        <tr>
+          <th>Mã NV</th>
+          <th>Tên Nhân Viên</th>
+          <th>Ngày Sinh</th>
+          <th>Email</th>
+          <th>CCCD/CMND</th>
+          <th>Số Điện Thoại</th>
+          <th>Thao tác</th>
+        </tr>
+      </thead>
+      <tbody id="staffDataTable"></tbody>
+    </table>
+  </div>
+</div>
+
+<div
+  id="addStaffWrapper"
+  style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+  "
+>
+  <div
+    id="addStaffContent"
+    style="
+      width: 85%;
+      max-width: 1000px;
+      background: transparent; /* Đổi từ #fff thành transparent */
+      position: relative;
+      overflow: hidden;
+      /* box-shadow: 0 5px 25px rgba(0,0,0,0.2); */ /* Có thể tắt shadow nếu muốn trong suốt hoàn toàn */
+    "
+  >
+    <iframe
+      id="staffIframe"
+      src="AddStaff.html"
+      style="width: 100%; height: 600px; border: none; background: transparent"
+      allowtransparency="true"
+    ></iframe>
+  </div>
 </div>
 
 <script src="../STAFF/Staff.js"></script>

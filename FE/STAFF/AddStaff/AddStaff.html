@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cửa sổ Nhân Viên</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="AddStaff.css" />
+  </head>
+  <body>
+    <div class="modal-card">
+      <div class="header">Thêm Thông Tin Nhân Viên Mới</div>
+
+      <div class="content">
+        <form id="mainForm">
+          <div class="top-row">
+            <div class="avatar-box">
+              <img src="https://i.pravatar.cc/150?u=cafe7" alt="NV" />
+              <div class="cam-icon"><i class="fa-solid fa-camera"></i></div>
+            </div>
+
+            <div style="flex: 1; display: flex; gap: 15px">
+              <div class="field" style="flex: 1">
+                <label>Mã Nhân Viên:</label>
+                <div class="locked-info">
+                  <span>NV-10</span><i class="fa-solid fa-lock"></i>
+                </div>
+              </div>
+              <div class="field" style="flex: 2">
+                <label>Email:</label>
+                <input
+                  type="email"
+                  id="emailInput"
+                  placeholder="example@coffeemanager.com"
+                  value="nv10@coffeemanager.com"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Tên Nhân Viên:</label>
+              <input
+                type="text"
+                placeholder="Nhập tên..."
+                value="Nguyễn Văn A"
+              />
+            </div>
+            <div class="field">
+              <label>Số CCCD/CMND:</label>
+              <input
+                type="text"
+                placeholder="Nhập số..."
+                value="0400 1234 5678"
+              />
+            </div>
+            <div class="field">
+              <label>Chức vụ:</label>
+              <select
+                style="
+                  appearance: none;
+                  background: url(&quot;data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22%237D4111%22><path d=%22M7 10l5 5 5-5z%22/></svg>&quot;)
+                    no-repeat right 10px center white;
+                "
+              >
+                <option>Quản lý</option>
+                <option>Pha chế</option>
+                <option>Phục vụ</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Ngày Sinh:</label>
+              <input type="date" value="1998-05-20" />
+            </div>
+            <div class="field">
+              <label>Ngày Vào Làm:</label>
+              <input type="date" value="2024-01-15" />
+            </div>
+            <div class="field"></div>
+            <div class="field">
+              <label>Số Điện Thoại:</label>
+              <input type="tel" placeholder="09xx..." value="0905 123 456" />
+            </div>
+            <div class="field span-2">
+              <label>Địa Chỉ:</label>
+              <textarea placeholder="Nhập địa chỉ tạm trú...">
+Số 456, đường Cà Phê Rang, Đà Nẵng</textarea
+              >
+            </div>
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-save">
+              <i class="fa-solid fa-floppy-disk"></i> LƯU THÔNG TIN
+            </button>
+            <button
+              type="button"
+              class="btn btn-cancel"
+              onclick="window.parent.closeAddStaff()"
+            >
+              <i class="fa-solid fa-xmark"></i> HỦY
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

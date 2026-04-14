@@ -3,37 +3,44 @@
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
 />
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <link rel="stylesheet" href="../INVENTORY/Inventory.css" />
 
 <div class="header-row">
   <div class="search-group">
     <i class="fa-solid fa-magnifying-glass"></i>
-    <input type="text" placeholder="Tìm kiếm theo mã hoặc tên nguyên liệu..." />
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Tìm kiếm theo mã hoặc tên nguyên liệu..."
+    />
   </div>
-  <button class="btn-add"><i class="fa-solid fa-plus"></i> THÊM ĐƠN</button>
+  <button id="btnAddIngredient" class="btn-add">
+    <i class="fa-solid fa-plus"></i> THÊM MỚI
+  </button>
 </div>
 
 <div class="inventory-body">
   <div class="stats-grid">
     <div class="card">
       <i class="fa-solid fa-boxes-stacked"></i>
-      <div class="val">102</div>
+      <div class="val" id="totalIngredients">0</div>
       <div class="desc">Tổng nguyên liệu</div>
     </div>
+
     <div class="card" style="border-left: 5px solid var(--danger)">
       <i
         class="fa-solid fa-triangle-exclamation"
         style="color: var(--danger)"
       ></i>
-      <div class="val" style="color: var(--danger)">14</div>
+      <div class="val" id="lowStockCount" style="color: var(--danger)">0</div>
       <div class="desc">Sắp hết hàng</div>
     </div>
+
     <div class="card">
       <div style="font-size: 11px; font-weight: bold; margin-bottom: 5px">
-        THỐNG KÊ NHẬP - XUẤT
+        THỐNG KÊ NHẬP - XUẤT (TUẦN)
       </div>
-      <div class="chart-container">
+      <div class="chart-container" style="height: 100px">
         <canvas id="inventoryChart"></canvas>
       </div>
     </div>
@@ -41,21 +48,23 @@
 
   <div class="table-section">
     <div class="table-title">DANH SÁCH NGUYÊN LIỆU</div>
-    <table>
-      <thead>
-        <tr>
-          <th>Mã ID</th>
-          <th>Tên Nguyên Liệu</th>
-          <th>Nhà Cung Cấp</th>
-          <th>Đơn Vị</th>
-          <th>Số Lượng</th>
-          <th>Tối Thiểu</th>
-          <th>Trạng Thái</th>
-          <th>Xem</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Mã ID</th>
+            <th>Tên Nguyên Liệu</th>
+            <th>Nhà Cung Cấp</th>
+            <th>Đơn Vị</th>
+            <th>Số Lượng</th>
+            <th>Tối Thiểu</th>
+            <th>Trạng Thái</th>
+            <th>Hành Động</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 

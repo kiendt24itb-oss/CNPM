@@ -1,131 +1,36 @@
-﻿// ===== DATA =====
-const products = [
-  {
-    id: 1,
-    name: "Bánh Cheesecake Chanh Dây",
-    price: 45000,
-    category: "Bánh",
-    image:
-      "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=100&h=100&fit=crop",
-  },
-  {
-    id: 2,
-    name: "Cà Phê Sữa Đá",
-    price: 45000,
-    category: "Cà phê",
-    image:
-      "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=100&h=100&fit=crop",
-  },
-  {
-    id: 3,
-    name: "Cà Phê Sữa Đá",
-    price: 45000,
-    category: "Cà phê",
-    image:
-      "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=100&h=100&fit=crop",
-  },
-  {
-    id: 4,
-    name: "Cà Phê Đen Đá",
-    price: 45000,
-    category: "Cà phê",
-    image:
-      "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=100&h=100&fit=crop",
-  },
-  {
-    id: 5,
-    name: "Cà Phê Sữa Đá",
-    price: 45000,
-    category: "Cà phê",
-    image:
-      "https://images.unsplash.com/photo-1485808191679-5f86510681a2?w=100&h=100&fit=crop",
-  },
-  {
-    id: 6,
-    name: "Bánh Cheesecake Chanh Dây",
-    price: 45000,
-    category: "Bánh",
-    image:
-      "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=100&h=100&fit=crop",
-  },
-  {
-    id: 7,
-    name: "Cà Phê Sữa Đá",
-    price: 45000,
-    category: "Cà phê",
-    image:
-      "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=100&h=100&fit=crop",
-  },
-  {
-    id: 8,
-    name: "Cà Phê Trà",
-    price: 45000,
-    category: "Cà phê",
-    image:
-      "https://images.unsplash.com/photo-1497636577773-f1231844b336?w=100&h=100&fit=crop",
-  },
-  {
-    id: 9,
-    name: "Cà Phê Sữa Đá",
-    price: 45000,
-    category: "Cà phê",
-    image:
-      "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=100&h=100&fit=crop",
-  },
-  {
-    id: 10,
-    name: "Bánh Cheesecake Chanh Dây",
-    price: 45000,
-    category: "Bánh",
-    image:
-      "https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?w=100&h=100&fit=crop",
-  },
-  {
-    id: 11,
-    name: "Cà Phê Sữa Đá",
-    price: 45000,
-    category: "Cà phê",
-    image:
-      "https://images.unsplash.com/photo-1504630083234-14187a9df0f5?w=100&h=100&fit=crop",
-  },
-  {
-    id: 12,
-    name: "Cà Phê Trà Đá",
-    price: 45000,
-    category: "Trà",
-    image:
-      "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=100&h=100&fit=crop",
-  },
-  {
-    id: 13,
-    name: "Trà Đào",
-    price: 45000,
-    category: "Trà",
-    image:
-      "https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=100&h=100&fit=crop",
-  },
-];
+﻿// ===== CONFIG =====
+const API_URL = "../../BE/api/menu.php";
 
 // ===== UTIL =====
 function formatPrice(price) {
-  return price.toLocaleString("vi-VN") + "đ";
+  // Chuyển về số trước khi format nếu price là string
+  const numericPrice = typeof price === "string" ? parseFloat(price) : price;
+  return numericPrice.toLocaleString("vi-VN") + "đ";
 }
 
 // ===== RENDER =====
+// Thay vì dùng biến 'products' fix cứng, ta sẽ dùng dữ liệu từ API
 function renderProducts(productList) {
   const grid = document.getElementById("productGrid");
   if (!grid) return;
 
   grid.innerHTML = "";
 
+  // Nếu không có sản phẩm nào
+  if (productList.length === 0) {
+    grid.innerHTML =
+      "<p style='text-align:center; grid-column: 1/-1;'>Không tìm thấy sản phẩm nào.</p>";
+  }
+
   productList.forEach((product) => {
     const card = document.createElement("div");
     card.className = "product-card";
 
+    // Mapping đúng tên cột từ Database: menu_id, name, price, image
     card.innerHTML = `
       <div class="product-header">
         <div class="product-image">
-          <img src="${product.image}" alt="${product.name}">
+          <img src="../../assets/img/products/${product.image || "default.png"}" alt="${product.name}">
         </div>
         <div class="product-info">
           <div class="product-label">Tên sản phẩm</div>
@@ -134,15 +39,15 @@ function renderProducts(productList) {
         </div>
       </div>
       <div class="product-actions">
-        <button class="btn-view" data-id="${product.id}">
-          <i class="fa-regular fa-eye" data-id="${product.id}"></i> Xem
+        <button class="btn-view" data-id="${product.menu_id}">
+          <i class="fa-regular fa-eye" data-id="${product.menu_id}"></i> Xem
         </button>
         <div class="action-row">
-          <button class="btn-edit" data-id="${product.id}">
-            <i class="fa-solid fa-pen-to-square" data-id="${product.id}"></i> Sửa
+          <button class="btn-edit" data-id="${product.menu_id}">
+            <i class="fa-solid fa-pen-to-square" data-id="${product.menu_id}"></i> Sửa
           </button>
-          <button class="btn-delete" data-id="${product.id}">
-            <i class="fa-solid fa-trash-can" data-id="${product.id}"></i> Xoá
+          <button class="btn-delete" data-id="${product.menu_id}">
+            <i class="fa-solid fa-trash-can" data-id="${product.menu_id}"></i> Xoá
           </button>
         </div>
       </div>
@@ -155,47 +60,82 @@ function renderProducts(productList) {
   if (total) total.textContent = productList.length;
 }
 
-// ===== FILTER =====
+// ===== API CALLS =====
+async function fetchProducts(params = "") {
+  try {
+    const response = await fetch(`${API_URL}${params}`);
+    const result = await response.json();
+    if (result.success) {
+      renderProducts(result.data);
+    } else {
+      console.error("Lỗi lấy dữ liệu:", result.message);
+    }
+  } catch (error) {
+    console.error("Lỗi kết nối API:", error);
+  }
+}
+
+// ===== FILTER & SEARCH (GỌI API) =====
 function filterProducts() {
   const searchInput = document.getElementById("searchInput");
   const categoryEl = document.getElementById("selectedCategory");
 
   if (!searchInput || !categoryEl) return;
 
-  const searchTerm = searchInput.value.toLowerCase();
-  const category = categoryEl.textContent;
+  const searchTerm = searchInput.value;
+  const categoryId = categoryEl.getAttribute("data-id"); // Lưu ID category vào attribute này
 
-  let filtered = products;
+  let queryParams = new URLSearchParams();
+  if (searchTerm) queryParams.append("search", searchTerm);
+  if (categoryId && categoryId !== "all")
+    queryParams.append("category_id", categoryId);
 
-  if (category !== "Tất cả") {
-    filtered = filtered.filter((p) => p.category === category);
-  }
-
-  if (searchTerm) {
-    filtered = filtered.filter((p) =>
-      p.name.toLowerCase().includes(searchTerm),
-    );
-  }
-
-  renderProducts(filtered);
+  const queryString = queryParams.toString()
+    ? "?" + queryParams.toString()
+    : "";
+  fetchProducts(queryString);
 }
+
+// Load danh mục cho Dropdown từ Database
+async function loadCategories() {
+  try {
+    const response = await fetch(`${API_URL}?action=form-data`);
+    const result = await response.json();
+    const dropdown = document.getElementById("dropdownMenu");
+
+    if (result.success && dropdown) {
+      let html = `<a href="#" onclick="selectCategory('Tất cả', 'all')">Tất cả</a>`;
+      result.categories.forEach((cat) => {
+        html += `<a href="#" onclick="selectCategory('${cat.category_name}', '${cat.category_id}')">${cat.category_name}</a>`;
+      });
+      dropdown.innerHTML = html;
+    }
+  } catch (error) {
+    console.error("Không thể load danh mục");
+  }
+}
+
+// Cập nhật hàm chọn category để lưu cả ID
+window.selectCategory = function (name, id) {
+  const categoryEl = document.getElementById("selectedCategory");
+  categoryEl.textContent = name;
+  categoryEl.setAttribute("data-id", id);
+  document.getElementById("dropdownMenu").classList.remove("show");
+  filterProducts();
+};
+
+// ===== CÁC HÀM UI (GIỮ NGUYÊN) =====
+window.initMenu = function () {
+  console.log("Menu init with API");
+  loadCategories();
+  fetchProducts(); // Lấy tất cả lần đầu
+};
 
 window.openFormula = function () {
   const wrapper = document.getElementById("formulaWrapper");
   const content = document.getElementById("formulaContent");
-
   if (!wrapper || !content) return;
-
-  // Chèn iframe vào vùng chứa
-  // Chú ý: Căn chỉnh height và width cho phù hợp với modal của bạn
-  content.innerHTML = `
-    <iframe 
-      src="../MENU/FORMULA/Formula.html" 
-      id="formulaIframe"
-      style="width: 100%; height: 85vh; border: none; border-radius: 8px;"
-    ></iframe>
-  `;
-
+  content.innerHTML = `<iframe src="../MENU/FORMULA/Formula.html" style="width: 100%; height: 85vh; border: none; border-radius: 8px;"></iframe>`;
   wrapper.style.display = "flex";
   document.body.style.overflow = "hidden";
 };
@@ -204,58 +144,16 @@ window.closeFormula = function () {
   const wrapper = document.getElementById("formulaWrapper");
   if (wrapper) {
     wrapper.style.display = "none";
-    document.getElementById("formulaContent").innerHTML = ""; // Xoá iframe để giải phóng bộ nhớ
+    document.getElementById("formulaContent").innerHTML = "";
     document.body.style.overflow = "auto";
   }
-};
-
-// ===== INIT (QUAN TRỌNG NHẤT) =====
-function initMenu() {
-  renderProducts(products);
-}
-
-function addNewRow() {
-  const container = document.getElementById("list-container");
-  const row = document.createElement("div");
-  row.className = "table-grid"; // Để nó chia cột giống tiêu đề
-
-  row.innerHTML = `
-    <input type="text" placeholder="Tên NL">
-    <input type="number" placeholder="0">
-    <input type="text" placeholder="Đơn vị">
-    <input type="text" placeholder="Ghi chú">
-    <button onclick="this.parentElement.remove()" style="color:red; cursor:pointer;">
-        <i class="fa fa-trash"></i>
-    </button>
-  `;
-  container.appendChild(row);
-}
-// expose ra global để index.js gọi
-window.initMenu = initMenu;
-window.filterProducts = filterProducts;
-window.toggleDropdown = function () {
-  document.getElementById("dropdownMenu")?.classList.toggle("show");
-};
-window.selectCategory = function (category) {
-  document.getElementById("selectedCategory").textContent = category;
-  document.getElementById("dropdownMenu").classList.remove("show");
-  filterProducts();
 };
 
 window.openAddProduct = function () {
   const wrapper = document.getElementById("addProductWrapper");
   const content = document.getElementById("addProductContent");
-
   if (!wrapper || !content) return;
-
-  content.innerHTML = `
-    <iframe 
-      src="../MENU/AddProduct/AddProduct.html" 
-      id="addProductIframe"
-      style="width: 100%; height: 85vh; border: none; border-radius: 15px;"
-    ></iframe>
-  `;
-
+  content.innerHTML = `<iframe src="../MENU/AddProduct/AddProduct.html" style="width: 100%; height: 85vh; border: none; border-radius: 15px;"></iframe>`;
   wrapper.style.display = "flex";
   document.body.style.overflow = "hidden";
 };
@@ -266,39 +164,37 @@ window.closeAddProduct = function () {
     wrapper.style.display = "none";
     document.getElementById("addProductContent").innerHTML = "";
     document.body.style.overflow = "auto";
+    fetchProducts(); // Load lại danh sách sau khi đóng modal (phòng trường hợp vừa thêm mới)
   }
 };
 
-window.addProduct = function () {
-  openAddProduct();
-};
+window.addProduct = () => openAddProduct();
+window.toggleDropdown = () =>
+  document.getElementById("dropdownMenu")?.classList.toggle("show");
 
-// ===== EVENT (KHÔNG BỊ NHÂN ĐÔI) =====
-if (!window._menuInit) {
-  document.addEventListener("click", (e) => {
-    // dropdown close
-    if (!e.target.closest(".dropdown-container")) {
-      document.getElementById("dropdownMenu")?.classList.remove("show");
-    }
+// ===== EVENT HANDLING =====
+document.addEventListener("click", async (e) => {
+  if (!e.target.closest(".dropdown-container")) {
+    document.getElementById("dropdownMenu")?.classList.remove("show");
+  }
 
-    // button actions
-    const id = e.target.dataset.id;
-    if (!id) return;
+  const id = e.target.dataset.id;
+  if (!id) return;
 
-    if (e.target.classList.contains("btn-view")) {
-      alert("Xem ID: " + id);
-    }
-
-    if (e.target.classList.contains("btn-edit")) {
-      alert("Sửa ID: " + id);
-    }
-
-    if (e.target.classList.contains("btn-delete")) {
-      if (confirm("Xoá?")) {
-        alert("Đã xoá ID: " + id);
+  if (e.target.classList.contains("btn-delete")) {
+    if (confirm("Bạn có chắc chắn muốn xoá món này?")) {
+      try {
+        const res = await fetch(`${API_URL}?id=${id}`, { method: "DELETE" });
+        const result = await res.json();
+        alert(result.message);
+        if (result.success) fetchProducts();
+      } catch (err) {
+        alert("Lỗi khi xoá");
       }
     }
-  });
+  }
+  // Các nút Xem/Sửa bạn có thể viết tiếp logic mở Modal tương tự
+});
 
-  window._menuInit = true;
-}
+// Chạy init
+initMenu();
